@@ -45,6 +45,13 @@
     .transformer-output{margin:4px 0;background:#080f1e;border:1px solid #34415a;border-radius:12px;padding:16px;color:#c9eedc;min-height:110px;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
     .transformer-tools .actions{margin-top:4px}
     #transformer-generate:disabled{opacity:.5;cursor:not-allowed}
+    .classifier-tools{display:grid;gap:10px;padding-top:8px}
+    .classifier-tools>label{font-size:12px;font-weight:700;color:var(--muted)}
+    #classifier-file{max-width:100%;width:100%;font:inherit;padding:10px;border:1px solid var(--stroke);border-radius:10px;background:#111b30;color:var(--text)}
+    .classifier-examples{padding:4px 0}
+    .classifier-result{background:#141d32;border:1px solid var(--stroke);border-radius:12px;padding:15px;color:var(--text);min-height:65px;overflow-wrap:anywhere}
+    .classifier-result p{margin:7px 0}
+    #classifier-submit:disabled{opacity:.5;cursor:not-allowed}
   </style>
 </head>
 <body>
@@ -75,6 +82,28 @@
     </div>
     <p id="teach-status" role="status"></p>
     <div id="learned-list" class="learned-list" aria-label="Respuestas añadidas"></div>
+  </details>
+  <details id="classifier-lab">
+    <summary>🧠 Mini IA 9.0 — Probar mi red neuronal clasificadora</summary>
+    <p>Tu experimento de Kaggle obtuvo <strong>27/30 respuestas acertadas</strong> en la prueba final, frente a 28/30 de la búsqueda por similitud. Aquí puedes probar ambos con tus propias preguntas. <strong>Este modelo elige una de 30 respuestas:</strong> no genera frases nuevas ni sustituye el chat principal.</p>
+    <p>Descarga <code>mi-ia-v9-clasificador.json</code> desde <strong>Output → /kaggle/working</strong> de tu notebook de Kaggle. Después, selecciónalo aquí. Los cálculos se realizan en tu navegador.</p>
+    <div class="classifier-tools">
+      <label for="classifier-file">Cargar modelo Mini IA 9.0 (.json)</label>
+      <input id="classifier-file" type="file" accept=".json,application/json" aria-describedby="classifier-status">
+      <p id="classifier-model" class="note"></p>
+      <p id="classifier-status" class="note" role="status">Todavía no has cargado tu clasificador de Kaggle.</p>
+      <form id="classifier-form" class="teach">
+        <label for="classifier-question">Escribe una pregunta</label>
+        <input id="classifier-question" type="text" maxlength="350" required placeholder="Por ejemplo: ¿Qué es Python?">
+        <div class="suggestions classifier-examples">
+          <button type="button" class="chip" data-classifier-example="buenos dias">Buenos días</button>
+          <button type="button" class="chip" data-classifier-example="define python">Define Python</button>
+          <button type="button" class="chip" data-classifier-example="como funciona un transformer">¿Cómo funciona un Transformer?</button>
+        </div>
+        <button class="add" id="classifier-submit" type="submit" disabled>Preguntar a mi red neuronal</button>
+      </form>
+      <div id="classifier-result" class="classifier-result" aria-live="polite">Primero carga el archivo de Kaggle.</div>
+    </div>
   </details>
   <details id="transformer-lab">
     <summary>🧠 Laboratorio: mi Transformer neuronal (experimental)</summary>
@@ -118,5 +147,6 @@
 </main>
 <script type="module" src="./app.js"></script>
 <script type="module" src="./transformer-ui.js?v=7.1"></script>
+<script type="module" src="./classifier-ui.js?v=9.0"></script>
 </body>
 </html>
