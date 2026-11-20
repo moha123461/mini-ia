@@ -15,10 +15,10 @@ jobs:
         run: npm test
       - name: Comprobar entrenamiento de Python y cuaderno de Kaggle
         run: |
-          python -m py_compile entrenar_v8.py entrenar_v8_1.py
+          python -m py_compile entrenar_v8.py entrenar_v8_1.py entrenar_v9_clasificador.py
           python - <<'PY'
           import json
-          for notebook_path in ("Mini_IA_8_Entrenamiento.ipynb", "Mini_IA_8_1_Entrenamiento.ipynb"):
+          for notebook_path in ("Mini_IA_8_Entrenamiento.ipynb", "Mini_IA_8_1_Entrenamiento.ipynb", "Mini_IA_9_Clasificador.ipynb"):
               with open(notebook_path, encoding="utf-8") as f:
                   notebook = json.load(f)
               cells = [cell for cell in notebook["cells"] if cell["cell_type"] == "code"]
