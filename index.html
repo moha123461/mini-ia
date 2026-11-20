@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101423">
-  <meta name="description" content="Mini IA 10.0: chatbot educativo con base de conocimientos, explicaciones y aprendizaje local, sin API ni servidor.">
-  <title>Mini IA 10.0 — Mi primera IA</title>
+  <meta name="description" content="Mini IA 11.0: chatbot educativo con base de conocimientos, explicaciones y aprendizaje local, sin API ni servidor.">
+  <title>Mini IA 11.0 — Mi primera IA</title>
   <style>
     :root{color-scheme:dark;--bg:#0b0e19;--panel:#141a2b;--panel2:#1d263c;--stroke:#303c56;--text:#f0f4fc;--muted:#a6b2c9;--accent:#9b9dff;--accent2:#6ee0bd;--user:#4b4bba}
     *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#1b2646 0,#0b0e19 57%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
@@ -62,7 +62,7 @@
 <body>
 <main class="app">
   <header class="top">
-    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 10.0</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
+    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 11.0</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
     <div class="status">● Funciona sin API</div>
   </header>
   <section class="chat" aria-label="Chat con Mini IA">
@@ -70,7 +70,7 @@
     <div class="neural-mode-bar">
       <label class="neural-switch" for="neural-mode"><input type="checkbox" id="neural-mode"><span>Activar mi red neuronal en el chat</span></label>
       <span class="note" id="neural-chat-status" role="status" aria-live="polite">Modo clásico.</span>
-      <p class="neural-explain">Experimental: utiliza la red neuronal de 30 categorías cuando reconoce la pregunta. Tus respuestas enseñadas tienen prioridad; ante dudas utiliza respuestas preparadas muy parecidas o dice que no sabe.</p>
+      <p class="neural-explain">Experimental: la red neuronal publicada todavía reconoce solo 30 categorías. El chat clásico ya tiene 60 temas. Tus respuestas enseñadas tienen prioridad; ante dudas usa respuestas preparadas muy parecidas o dice que no sabe.</p>
     </div>
     <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
     <div class="suggestions" id="suggestions" aria-label="Preguntas sugeridas"></div>
@@ -92,6 +92,12 @@
     </div>
     <p id="teach-status" role="status"></p>
     <div id="learned-list" class="learned-list" aria-label="Respuestas añadidas"></div>
+  </details>
+  <details id="training-v11">
+    <summary>📚 Mini IA 11.0 — Entrenamiento experimental con 60 temas</summary>
+    <p>El chat clásico ya contiene <strong>60 temas educativos</strong>. El clasificador neuronal publicado mantiene 30 categorías hasta que entrenemos uno nuevo y comprobemos sus resultados.</p>
+    <p>He preparado un <a href="https://github.com/moha123461/mini-ia/blob/main/Mini_IA_11_Entrenamiento.ipynb" target="_blank" rel="noopener noreferrer">Notebook para Kaggle: Mini IA 11.0</a>. Entrena una nueva red neuronal con 120 preguntas, valida con otras 60 y evalúa 60 preguntas reservadas. <strong>Es un experimento: el resultado todavía es desconocido.</strong></p>
+    <p>Para utilizarlo: descarga el cuaderno, ábrelo en un Notebook nuevo de Kaggle y pulsa <strong>Run All</strong>. Después compara los aciertos antes de reemplazar el modelo publicado.</p>
   </details>
   <details id="classifier-lab">
     <summary>🧠 Mini IA 9.2 — Red neuronal con modo prudente</summary>
@@ -155,9 +161,9 @@
       <pre id="transformer-output" class="transformer-output" aria-live="polite">Aquí aparecerá el texto generado por el modelo.</pre>
     </div>
   </details>
-  <p class="footer">Mini IA 10.0 · Proyecto educativo gratuito. El chat principal permite activar opcionalmente la red neuronal clasificadora con 30 respuestas conocidas; también conserva respuestas preparadas. El laboratorio neuronal y el Transformer siguen disponibles para comparar. Son sistemas separados. Los cálculos se realizan en tu navegador. El modelo neuronal conoce solo 30 categorías.</p>
+  <p class="footer">Mini IA 11.0 · Proyecto educativo gratuito. El chat principal incorpora 60 temas de respuestas preparadas y permite activar opcionalmente una red neuronal clasificadora con 30 categorías entrenadas. El laboratorio neuronal y el Transformer siguen disponibles para comparar. Son sistemas separados. Los cálculos se realizan en tu navegador. El modelo neuronal conoce solo 30 categorías.</p>
 </main>
-<script type="module" src="./app.js?v=10.0"></script>
+<script type="module" src="./app.js?v=11.0"></script>
 <script type="module" src="./transformer-ui.js?v=7.1"></script>
 <script type="module" src="./classifier-ui.js?v=10.0"></script>
 </body>
