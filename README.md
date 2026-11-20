@@ -31,6 +31,20 @@ En el Laboratorio Transformer, selecciona **«Opcional: importar otro modelo»**
 
 La arquitectura sigue siendo muy pequeña (48 dimensiones, una capa y contexto de 48 caracteres). Los resultados pueden seguir siendo pobres o memorizar las respuestas. No se deben comparar directamente puntuaciones de entrenamiento de conjuntos de datos diferentes. El entrenamiento requiere ejecutar Kaggle; un commit en GitHub no entrena el modelo.
 
+## Resultado de la primera prueba y corrección 8.1
+
+En Kaggle, la versión experimental 8.0 produjo **0/30 respuestas exactas** en las preguntas de prueba. Se mantiene para poder reproducir el experimento, pero no sustituye el modelo publicado de la web.
+
+La siguiente versión [Mini_IA_8_1_Entrenamiento.ipynb](./Mini_IA_8_1_Entrenamiento.ipynb) corrige el objetivo de entrenamiento: **la pérdida de la red neuronal evalúa los caracteres de la respuesta y no los de la pregunta**. Incluye también un comparador de búsqueda de respuestas a partir de las **60 preguntas de entrenamiento**, sin utilizar las 30 de prueba para construir el índice.
+
+En una evaluación independiente del comparador sobre estas mismas preguntas, se obtuvieron **28/30 aciertos**; esto es un resultado de *recuperación por similitud*, **no del Transformer**. El Transformer 8.1 todavía **no ha sido entrenado ni evaluado en Kaggle**.
+
+Para probarlo: importa el nuevo cuaderno en un Notebook de Kaggle, pulsa «Run All» y compara dos salidas:
+- «Transformer generativo: X/30 respuestas exactas en prueba».
+- «Recuperación por similitud: Y/30 respuestas correctas».
+
+El cuaderno guarda `mini_ia_v8_1.pt`, `mi-transformer-v8_1.json` y `evaluacion_mini_ia_v8_1.json`. No publiques el nuevo modelo en lugar del anterior hasta revisar el informe.
+
 ## Dos sistemas diferentes
 
 **Chat principal:** recupera respuestas preparadas mediante similitud de texto. Incluye unos 30 temas, historial local y aprendizaje de respuestas personalizadas. No genera lenguaje con una red neuronal.
@@ -57,7 +71,8 @@ Los archivos .pt no pueden cargarse directamente en el navegador. El script expo
 - transformer.js: inferencia del Transformer en JavaScript.
 - transformer-ui.js: selector de modelo, generación y controles.
 - exportar_kaggle.py: conversión de checkpoints anteriores de PyTorch.
-- entrenar_v8.py y Mini_IA_8_Entrenamiento.ipynb: entrenamiento y evaluación de la siguiente versión.
+- entrenar_v8.py y Mini_IA_8_Entrenamiento.ipynb: experimento original v8.0.
+- entrenar_v8_1.py y Mini_IA_8_1_Entrenamiento.ipynb: corrección experimental y comparador de recuperación.
 - test.mjs, test-transformer.mjs y test-modelo-real.mjs: pruebas con Node.js.
 - .github/workflows/check.yml: ejecución automática de pruebas.
 
