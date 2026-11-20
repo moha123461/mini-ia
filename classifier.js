@@ -55,7 +55,9 @@ const COMMON_WORDS=new Set([
   "para","por","puedo","puedes","que","quien","quiero","se","ser","si",
   "sirve","sobre","su","sus","te","tengo","tiene","tienes","tu","tus",
   "un","una","unas","uno","unos","y","yo","define","sabes","saber",
-  "dias","dia","buenos","buenas"
+  "dias","dia","buenos","buenas",
+  // Fórmulas habituales de la pregunta; no son por sí solas un tema nuevo.
+  "significa","usaron","hicieron","sitio"
 ]);
 function importantWords(text){
   return (norm(text).match(/[a-z0-9]+/g)||[])
