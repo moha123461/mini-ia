@@ -53,3 +53,27 @@ test("rechaza archivos corruptos y dimensiones incorrectas",()=>{
   assert.throws(()=>new NeuralClassifier(model),/Dimensiones/);
   assert.throws(()=>new NeuralClassifier({...syntheticModel(),baseline_labels:[999,0]}),/Etiquetas/);
 });
+
+
+test("modo prudente: permite respuestas conocidas y rechaza temas ajenos",()=>{
+  const clf=new NeuralClassifier(syntheticModel());
+  const known=clf.answerSafely("Hola");
+  assert.equal(known.accepted,true);
+  assert.equal(known.safeAnswer,"Hola.");
+  const unknown=clf.answerSafely("Qué es el ADN");
+  assert.equal(unknown.accepted,false);
+  assert.match(unknown.safeAnswer,/Todavía no sé/);
+  assert.ok(typeof unknown.reason==="string");
+  // El modelo sigue disponible para comparar la predicción experimental.
+  assert.ok(unknown.answer.length>0);
+});
+
+test("modelo sin ejemplos comparables no se presenta como una respuesta segura",()=>{
+  const model=syntheticModel();
+  delete model.baseline_questions;
+  delete model.baseline_labels;
+  const clf=new NeuralClassifier(model);
+  const result=clf.answerSafely("Hola");
+  assert.equal(result.accepted,false);
+  assert.match(result.reason,/ejemplos de entrenamiento/);
+});
