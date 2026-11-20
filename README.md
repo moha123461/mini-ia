@@ -53,7 +53,20 @@ Las capturas de Kaggle confirmaron que el Transformer v8.1 obtuvo **0/30** acier
 
 La nueva red neuronal no genera caracteres: es un **clasificador de 30 respuestas cerradas** (vectorización TF-IDF de n-gramas, capa oculta con ReLU y capa de salida de 30 categorías). Trabaja con **las mismas preguntas de entrenamiento, validación y prueba** que v8.1. La red aprenderá pesos nuevos en Kaggle; se compara con el recuperador usando los mismos 30 ejemplos finales.
 
-Al terminar crea `mi_ia_9_clasificador.pt`, `mi-ia-v9-clasificador.json` y `resultados-mini-ia-v9.json`. **Los archivos aún no existen hasta ejecutar Kaggle.** El JSON es un formato de exportación para integrar después; **la web actual no lo admite todavía**. No sustituyas el Transformer publicado hasta analizar los nuevos resultados.
+En tu ejecución real de Kaggle, la red neuronal consiguió **60/60 en entrenamiento, 25/30 en validación y 27/30 en prueba final**. La búsqueda por similitud obtuvo **60/60, 21/30 y 28/30**. Los resultados proceden de un conjunto pequeño y no demuestran comprensión general.
+
+El cuaderno genera `mi_ia_9_clasificador.pt`, `mi-ia-v9-clasificador.json` y `resultados-mini-ia-v9.json`. El modelo **ya se puede importar manualmente en la web**, pero no se publica automáticamente.
+
+### Probar tu red neuronal en la web
+
+1. En Kaggle, abre el Notebook de Mini IA 9.0 y descarga `mi-ia-v9-clasificador.json` desde `Output → /kaggle/working`.
+2. Abre https://moha123461.github.io/mini-ia/ y despliega «Mini IA 9.0 — Probar mi red neuronal clasificadora».
+3. Carga el archivo JSON y comprueba que indique que los pesos se han importado.
+4. Pregunta «buenos dias», «define python» o «como funciona un transformer» y compara las dos respuestas.
+
+El nuevo motor está en `classifier.js` y su interfaz en `classifier-ui.js`. Calcula localmente los n-gramas de caracteres, TF-IDF y las dos capas lineales con ReLU que entrenaste con PyTorch. **Siempre elige entre 30 respuestas** aunque no conozca el tema, por lo que permanece separado del chat principal y no debe considerarse un asistente general. El valor Softmax no equivale a confianza calibrada.
+
+Una captura de pantalla no incluye los pesos de PyTorch: para instalar el modelo 9.0 como predeterminado en GitHub necesitaríamos el archivo `mi-ia-v9-clasificador.json` real.
 
 ## Dos sistemas diferentes
 
@@ -84,6 +97,8 @@ Los archivos .pt no pueden cargarse directamente en el navegador. El script expo
 - entrenar_v8.py y Mini_IA_8_Entrenamiento.ipynb: experimento original v8.0.
 - entrenar_v8_1.py y Mini_IA_8_1_Entrenamiento.ipynb: corrección experimental y comparador de recuperación.
 - entrenar_v9_clasificador.py y Mini_IA_9_Clasificador.ipynb: clasificador neuronal supervisado, con evaluación separada.
+- classifier.js y classifier-ui.js: motor e interfaz para importar y probar Mini IA 9.0.
+- test-classifier.mjs: comprobaciones del formato, la clasificación y las validaciones.
 - test.mjs, test-transformer.mjs y test-modelo-real.mjs: pruebas con Node.js.
 - .github/workflows/check.yml: ejecución automática de pruebas.
 
