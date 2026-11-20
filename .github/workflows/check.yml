@@ -13,3 +13,16 @@ jobs:
           node-version: '22'
       - name: Ejecutar pruebas
         run: npm test
+      - name: Comprobar entrenamiento de Python y cuaderno de Kaggle
+        run: |
+          python -m py_compile entrenar_v8.py
+          python - <<'PY'
+          import json
+          with open("Mini_IA_8_Entrenamiento.ipynb", encoding="utf-8") as f:
+              notebook = json.load(f)
+          cells = [cell for cell in notebook["cells"] if cell["cell_type"] == "code"]
+          for i, cell in enumerate(cells, 1):
+              compile("".join(cell["source"]), f"celda-{i}", "exec")
+          assert len(cells) >= 5
+          print("Entrenamiento y notebook válidos:", len(cells), "celdas")
+          PY
