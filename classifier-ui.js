@@ -1,4 +1,4 @@
-import {NeuralClassifier} from "./classifier.js";
+import {NeuralClassifier} from "./classifier.js?v=9.2";
 
 // El modelo no se almacena en la web: se importa desde el navegador.
 // Nunca se envían las preguntas ni los pesos a una API.
