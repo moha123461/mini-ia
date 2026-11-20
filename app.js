@@ -41,9 +41,10 @@ function add(role,text,remember=true,source=""){
     const help=document.createElement("button");
     help.type="button";help.className="inline-help";
     help.textContent="Enseñarme esta respuesta";
+    const thisUnknown=lastUnknown;
     help.addEventListener("click",()=>{
       $("teach").open=true;
-      $("new-question").value=lastUnknown;
+      $("new-question").value=thisUnknown;
       $("new-question").focus();
       $("teach").scrollIntoView({behavior:"smooth",block:"center"});
     });
