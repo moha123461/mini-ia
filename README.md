@@ -1,6 +1,24 @@
-# Mini IA 10.0
+# Mini IA 11.0
 
 Sitio: https://moha123461.github.io/mini-ia/
+
+## Mini IA 11.0 — Ampliación de conocimientos y entrenamiento experimental
+
+El **chat clásico ya tiene 60 temas educativos**: 30 anteriores y 30 nuevos en [extra-knowledge.js](./extra-knowledge.js), con 150 formulaciones preparadas sobre HTML, CSS, Git, bases de datos, seguridad, conceptos de IA y más. Las respuestas son **conocimientos escritos y buscados por similitud**, no aprendizaje de nuevos pesos. Se han comprobado las 150 formulaciones conocidas y se han conservado las respuestas que tú le enseñaste en el navegador.
+
+La **red neuronal actualmente publicada sigue entrenada con 30 categorías**, por lo que no debes confundir los 60 temas del chat con 60 capacidades neuronales. Puedes seguir usando el modo opcional, sabiendo esa limitación.
+
+### Nuevo cuaderno Kaggle: entrenar 60 categorías
+
+- [Mini_IA_11_Entrenamiento.ipynb](./Mini_IA_11_Entrenamiento.ipynb) es un notebook **autónomo** listo para importar en Kaggle, con datos incluidos y sin depender de archivos externos.
+- [entrenar_v11_clasificador.py](./entrenar_v11_clasificador.py) contiene el mismo experimento en un script Python.
+- Utiliza 60 categorías, 120 preguntas de entrenamiento, 60 de validación y otras 60 para prueba. Las preguntas reservadas no se usan para calcular los pesos del modelo; la validación ayuda a detener el entrenamiento. Es un experimento pequeño y puede haber sobreajuste.
+- Guarda `mi_ia_11_clasificador.pt` (checkpoint), `mi-ia-v11-clasificador.json` (para integrar más adelante en la web) y `resultados-mini-ia-v11.json` (informe de evaluación). **Los archivos solo aparecen después de ejecutar el Notebook en Kaggle.**
+- El experimento incluye un diagnóstico separado sobre 12 preguntas ajenas a las 60 categorías para ilustrar que un clasificador puede dar respuestas erróneas fuera de tema.
+
+Para continuar, importa el cuaderno en un Notebook **nuevo** de Kaggle, ejecuta **Run All** y revisa `Prueba final: red neuronal X/60 | similitud Y/60`. No compares sin más X/60 con la antigua puntuación de 27/30: se trata de una prueba diferente y **aún no sabemos el resultado**.
+
+**No se ha sustituido ni vuelto a entrenar el modelo real publicado en GitHub.** Solo cuando se evalúe el nuevo modelo y compartas su JSON se podrá publicar con garantías básicas y comprobarlo en la web.
 
 ## Mini IA 10.0 — Modo neuronal opcional en el chat principal
 
