@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101423">
-  <meta name="description" content="Mini IA 6.0: chatbot educativo con base de conocimientos, explicaciones y aprendizaje local, sin API ni servidor.">
-  <title>Mini IA 6.0 — Mi primera IA</title>
+  <meta name="description" content="Mini IA 7.0: chatbot educativo con base de conocimientos, explicaciones y aprendizaje local, sin API ni servidor.">
+  <title>Mini IA 7.0 — Mi primera IA</title>
   <style>
     :root{color-scheme:dark;--bg:#0b0e19;--panel:#141a2b;--panel2:#1d263c;--stroke:#303c56;--text:#f0f4fc;--muted:#a6b2c9;--accent:#9b9dff;--accent2:#6ee0bd;--user:#4b4bba}
     *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#1b2646 0,#0b0e19 57%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
@@ -36,12 +36,21 @@
     button:focus-visible,.file-label:focus-within,input:focus-visible,summary:focus-visible{outline:2px solid #9b9dff;outline-offset:3px}
     @media(max-width:550px){.composer-label{display:none}.actions{width:100%}.data-actions{align-items:stretch}.learned-item{align-items:flex-start;flex-direction:column}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+    .transformer-tools{display:grid;gap:10px;padding-top:8px}
+    .transformer-tools>label,.transformer-tools form>label{font-size:12px;font-weight:700;color:var(--muted)}
+    #transformer-file{max-width:100%;font:inherit;color:var(--text);padding:10px;background:#111b30;border:1px solid var(--stroke);border-radius:10px}
+    .transformer-tools select,.transformer-tools input[type=text]{width:100%;padding:12px;border-radius:10px;border:1px solid #445373;background:#111b30;color:var(--text);font:inherit}
+    .transformer-examples{padding:4px 0 12px}
+    .transformer-output{margin:4px 0;background:#080f1e;border:1px solid #34415a;border-radius:12px;padding:16px;color:#c9eedc;min-height:110px;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+    .transformer-tools .actions{margin-top:4px}
+    #transformer-generate:disabled{opacity:.5;cursor:not-allowed}
   </style>
 </head>
 <body>
 <main class="app">
   <header class="top">
-    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 6.0</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
+    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 7.0</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
     <div class="status">● Funciona sin API</div>
   </header>
   <section class="chat" aria-label="Chat con Mini IA">
@@ -67,8 +76,46 @@
     <p id="teach-status" role="status"></p>
     <div id="learned-list" class="learned-list" aria-label="Respuestas añadidas"></div>
   </details>
-  <p class="footer">Mini IA 6.0 · Proyecto educativo gratuito · Motor local de similitud de textos con respuestas preparadas. No es un modelo generativo ni ejecuta el Transformer de Kaggle. Tus datos se guardan en este navegador: evita introducir información privada en dispositivos compartidos.</p>
+  <details id="transformer-lab">
+    <summary>🧠 Laboratorio: mi Transformer neuronal (experimental)</summary>
+    <p>Esta sección ejecuta <strong>una red neuronal Transformer real</strong> con sus propios pesos. El modelo predice el siguiente carácter; <strong>no funciona como un asistente conversacional avanzado</strong>. El chat de arriba seguirá funcionando de forma independiente.</p>
+    <p>Primero carga un archivo <code>.json</code> con los pesos del modelo. Puedes usar el <strong>modelo de demostración</strong> del proyecto o exportar el que entrenaste en Kaggle siguiendo <a href="https://github.com/moha123461/mini-ia/blob/main/exportar_kaggle.py" target="_blank" rel="noopener noreferrer">estas instrucciones de exportación</a>. El archivo se procesa solo en el navegador.</p>
+    <div class="transformer-tools">
+      <label for="transformer-file">Importar pesos del Transformer (.json)</label>
+      <input id="transformer-file" type="file" accept=".json,application/json" aria-describedby="transformer-status">
+      <p id="transformer-source" class="note"></p>
+      <p id="transformer-status" class="note" role="status">No hay ningún modelo cargado.</p>
+      <form id="transformer-form" class="teach">
+        <label for="transformer-prompt">Inicio del texto</label>
+        <input id="transformer-prompt" type="text" value="La " maxlength="120" autocomplete="off" required>
+        <div class="suggestions transformer-examples">
+          <button type="button" class="chip" data-try-transformer="La ">La </button>
+          <button type="button" class="chip" data-try-transformer="Python ">Python </button>
+          <button type="button" class="chip" data-try-transformer="Usuario: Hola&#10;IA:">Usuario: Hola</button>
+        </div>
+        <label for="transformer-length">Longitud del texto</label>
+        <select id="transformer-length">
+          <option value="30">30 caracteres</option>
+          <option value="60" selected>60 caracteres</option>
+          <option value="100">100 caracteres</option>
+        </select>
+        <label for="transformer-temperature">Creatividad / temperatura</label>
+        <select id="transformer-temperature">
+          <option value="0.35">Baja (más repetitiva)</option>
+          <option value="0.6" selected>Media</option>
+          <option value="1">Alta (menos predecible)</option>
+        </select>
+        <div class="actions">
+          <button class="add" type="submit" id="transformer-generate" disabled>Generar con mi Transformer</button>
+          <button class="softbutton" type="button" id="transformer-cancel" disabled>Detener</button>
+        </div>
+      </form>
+      <pre id="transformer-output" class="transformer-output" aria-live="polite">Aquí aparecerá el texto generado por el modelo.</pre>
+    </div>
+  </details>
+  <p class="footer">Mini IA 7.0 · Proyecto educativo gratuito. El chat principal utiliza similitud de textos. El laboratorio permite ejecutar un Transformer neuronal importado. Los datos del chat se guardan en este navegador; el modelo importado solo se conserva mientras la página está abierta.</p>
 </main>
 <script type="module" src="./app.js"></script>
+<script type="module" src="./transformer-ui.js"></script>
 </body>
 </html>
