@@ -23,6 +23,30 @@ function finiteArray(value,length,label){
   for(const item of value)if(typeof item!=="number"||!Number.isFinite(item))throw Error("Número inválido: "+label);
   return Float32Array.from(value);
 }
+// Formato compacto: los mismos pesos Float32, empaquetados sin redondeo adicional.
+function unpackWeights(model,G,H,A){
+  if(model.packed_weight_format!=="float32-le"||typeof model.packed_weights!=="string")
+    throw Error("Formato de pesos comprimidos no compatible.");
+  const sizes=[H*G,H,A*H,A];
+  const total=sizes.reduce((sum,n)=>sum+n,0);
+  let raw;
+  try{raw=atob(model.packed_weights);}catch{throw Error("Datos del modelo corruptos.");}
+  if(raw.length!==total*4)throw Error("Tamaño de los pesos incorrecto.");
+  const bytes=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+  const view=new DataView(bytes.buffer);
+  let offset=0;
+  const take=length=>{
+    const array=new Float32Array(length);
+    for(let i=0;i<length;i++)array[i]=view.getFloat32((offset++)*4,true);
+    if(array.some(v=>!Number.isFinite(v)))throw Error("Pesos no válidos.");
+    return array;
+  };
+  return {
+    fc1_weight:take(sizes[0]),fc1_bias:take(sizes[1]),
+    fc2_weight:take(sizes[2]),fc2_bias:take(sizes[3])
+  };
+}
 export class NeuralClassifier{
   constructor(data){
     if(data?.format!=="mini-ia-clasificador-v1")throw Error("El archivo no es un modelo clasificador de Mini IA 9.0.");
@@ -39,12 +63,15 @@ export class NeuralClassifier{
     this.granIndex=new Map(this.grams.map((x,i)=>[x,i]));
     this.idf=finiteArray(data.idf,G,"idf");
     if(this.idf.some(v=>v<=0))throw Error("IDF inválido.");
-    const w=data.weights;
+    const w=data.weights??unpackWeights(data,G,H,A);
     if(!w||typeof w!=="object")throw Error("Faltan los pesos de la red neuronal.");
-    this.W1=finiteArray(w.fc1_weight,H*G,"fc1_weight");
-    this.b1=finiteArray(w.fc1_bias,H,"fc1_bias");
-    this.W2=finiteArray(w.fc2_weight,A*H,"fc2_weight");
-    this.b2=finiteArray(w.fc2_bias,A,"fc2_bias");
+    const safe=(v,n,name)=>v instanceof Float32Array?
+      (v.length===n&&!v.some(x=>!Number.isFinite(x))?v:(()=>{throw Error("Dimensiones incorrectas: "+name);})()):
+      finiteArray(v,n,name);
+    this.W1=safe(w.fc1_weight,H*G,"fc1_weight");
+    this.b1=safe(w.fc1_bias,H,"fc1_bias");
+    this.W2=safe(w.fc2_weight,A*H,"fc2_weight");
+    this.b2=safe(w.fc2_bias,A,"fc2_bias");
     this.name=data.name||"Red neuronal clasificadora";
     this.baseline=null;
     if(data.baseline_questions!==undefined||data.baseline_labels!==undefined){
