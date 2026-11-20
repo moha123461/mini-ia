@@ -1,3 +1,4 @@
+import {EXTRA_KNOWLEDGE} from "./extra-knowledge.js";
 // Mini IA - motor local: recuperacion de respuestas, no modelo generativo.
 // No conecta a servidores ni usa claves API.
 export const KNOWLEDGE = [
@@ -32,6 +33,7 @@ export const KNOWLEDGE = [
  {id:"estado",q:["como estas","estas bien","como te va"],answer:"Estoy funcionando correctamente. ¿Qué quieres aprender hoy?"},
  {id:"privacidad",q:["guardas mis mensajes","donde guardas mis datos","que haces con mis mensajes","mis datos son privados"],answer:"Este chat funciona en tu navegador. El historial y las respuestas que añadas se guardan localmente en el dispositivo; no se envían a una API de IA.",detail:"Puedes borrar el historial y los conocimientos añadidos desde esta página. Si compartes el dispositivo, otras personas podrían ver los datos guardados."}
 ];
+KNOWLEDGE.push(...EXTRA_KNOWLEDGE);
 export const normalize = (input) => String(input||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[¿?¡!.,;:()[\]{}"'’]/g," ").replace(/\bq\b/g,"que").replace(/\bpq\b/g,"porque").replace(/\s+/g," ").trim();
 const stop = new Set(["el","la","los","las","un","una","de","del","y","es","en","por","para","que","quien","me","te","tu","mi","lo","se","a","como","cual","puedes","puedo","algo","esto","eso","sobre","quiero","saber"]);
 function charFeatures(s) {
