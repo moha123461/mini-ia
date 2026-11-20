@@ -1,6 +1,20 @@
-# Mini IA 9.0
+# Mini IA 9.1
 
 Sitio: https://moha123461.github.io/mini-ia/
+
+## Mini IA 9.1 — Modo prudente para preguntas desconocidas
+
+La versión 9.1 conserva **exactamente los mismos 141.982 pesos** entrenados con Kaggle. Solo cambia cómo decide la interfaz si mostrar la respuesta de una de las 30 categorías.
+
+- Se comprueba si la pregunta contiene conceptos que no figuran en los ejemplos de entrenamiento ni en las respuestas conocidas.
+- Se compara su semejanza con las 60 preguntas de entrenamiento.
+- Se exige un mínimo experimental de semejanza (coseno 0,43) y puntuación Softmax (0,48). Estos límites son **heurísticos no calibrados**; no son garantías de precisión.
+- Si no pasa las comprobaciones, el resultado principal es «Todavía no sé responder esa pregunta con suficiente seguridad». La predicción original sigue visible como **resultado descartado**, para distinguir inferencia neuronal de protección añadida.
+- Se puede enseñar una respuesta al **chat principal** mediante el formulario existente. Eso modifica únicamente las respuestas almacenadas en el navegador; **no reentrena** la red neuronal.
+
+En una comprobación de diagnóstico sobre 24 preguntas ajenas a los temas, se rechazaron las 24. En las **mismas 30 preguntas reservadas que ya conocíamos**, el modo prudente mostró 21 respuestas correctas, rechazó 9 y no mostró ninguna incorrecta como válida. Estas mediciones son **sobre ejemplos ya usados durante el desarrollo**, no constituyen una nueva prueba independiente ni deben extrapolarse a preguntas reales.
+
+El clasificador original sigue obteniendo **27/30 respuestas exactas** si se considera su predicción sin filtro. El filtro puede rechazar respuestas correctas, y también puede aceptar respuestas incorrectas en otros ejemplos. Para evaluar bien la abstención, el próximo experimento deberá utilizar un conjunto nuevo e independiente con preguntas fuera de tema.
 
 ## Mini IA 9.0: modelo personal integrado
 
@@ -71,12 +85,12 @@ El cuaderno genera `mi_ia_9_clasificador.pt`, `mi-ia-v9-clasificador.json` y `re
 
 1. En Kaggle, abre el Notebook de Mini IA 9.0 y descarga `mi-ia-v9-clasificador.json` desde `Output → /kaggle/working`.
 2. Abre https://moha123461.github.io/mini-ia/ y despliega «Mini IA 9.0 — Probar mi red neuronal clasificadora».
-3. Carga el archivo JSON y comprueba que indique que los pesos se han importado.
+3. Comprueba que el modelo cargue automáticamente. Seleccionar otro archivo JSON es opcional.
 4. Pregunta «buenos dias», «define python» o «como funciona un transformer» y compara las dos respuestas.
 
-El nuevo motor está en `classifier.js` y su interfaz en `classifier-ui.js`. Calcula localmente los n-gramas de caracteres, TF-IDF y las dos capas lineales con ReLU que entrenaste con PyTorch. **Siempre elige entre 30 respuestas** aunque no conozca el tema, por lo que permanece separado del chat principal y no debe considerarse un asistente general. El valor Softmax no equivale a confianza calibrada.
+El motor en `classifier.js` calcula localmente los n-gramas de caracteres, TF-IDF y las dos capas lineales con ReLU entrenadas con PyTorch. La predicción cruda **siempre elige entre 30 respuestas**. El modo prudente de la interfaz puede abstenerse cuando faltan indicios, por lo que sigue separado del chat principal y no debe considerarse un asistente general. El valor Softmax no equivale a confianza calibrada.
 
-Una captura de pantalla no incluye los pesos de PyTorch: para instalar el modelo 9.0 como predeterminado en GitHub necesitaríamos el archivo `mi-ia-v9-clasificador.json` real.
+Los pesos del clasificador ya están disponibles en [models/mi-ia-v9-clasificador.json](./models/mi-ia-v9-clasificador.json); no es necesario volver a subirlos.
 
 ## Dos sistemas diferentes
 
@@ -109,6 +123,7 @@ Los archivos .pt no pueden cargarse directamente en el navegador. El script expo
 - entrenar_v9_clasificador.py y Mini_IA_9_Clasificador.ipynb: clasificador neuronal supervisado, con evaluación separada.
 - classifier.js y classifier-ui.js: motor e interfaz para importar y probar Mini IA 9.0.
 - test-classifier.mjs: comprobaciones del formato, la clasificación y las validaciones.
+- test-modelo-v9.mjs: prueba el clasificador publicado y las nuevas abstenciones.
 - test.mjs, test-transformer.mjs y test-modelo-real.mjs: pruebas con Node.js.
 - .github/workflows/check.yml: ejecución automática de pruebas.
 
