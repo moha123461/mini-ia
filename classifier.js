@@ -1,0 +1,115 @@
+// Mini IA 9.0: clasificador neuronal en el navegador.
+// Arquitectura: TF-IDF char_wb 2-5 -> Linear -> ReLU -> Linear -> Softmax.
+// Igual que entrenar_v9_clasificador.py. No es un modelo generativo.
+function norm(text){
+  return String(text||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim().replace(/\s+/g," ");
+}
+function ngrams(text){
+  const bag=new Map();
+  for(const word of norm(text).split(" ")){
+    if(!word)continue;
+    const padded=" "+word+" ";
+    for(let n=2;n<=5;n++){
+      for(let start=0;start<=padded.length-n;start++){
+        const gram=padded.slice(start,start+n);
+        bag.set(gram,(bag.get(gram)||0)+1);
+      }
+    }
+  }
+  return bag;
+}
+function finiteArray(value,length,label){
+  if(!Array.isArray(value)||value.length!==length)throw Error("Dimensiones incorrectas: "+label);
+  for(const item of value)if(typeof item!=="number"||!Number.isFinite(item))throw Error("Número inválido: "+label);
+  return Float32Array.from(value);
+}
+export class NeuralClassifier{
+  constructor(data){
+    if(data?.format!=="mini-ia-clasificador-v1")throw Error("El archivo no es un modelo clasificador de Mini IA 9.0.");
+    const G=data.grams?.length,H=data.hidden,A=data.answers?.length;
+    if(!Number.isInteger(G)||G<2||G>30000||!Number.isInteger(H)||H<1||H>512||
+       !Number.isInteger(A)||A<2||A>200)throw Error("Tamaño de modelo no compatible.");
+    if(!Array.isArray(data.grams)||!data.grams.every(x=>typeof x==="string"&&x.length>=2&&x.length<=5)||
+       new Set(data.grams).size!==G)throw Error("Vocabulario inválido.");
+    if(!Array.isArray(data.answers)||!data.answers.every(x=>typeof x==="string"&&x.length>0&&x.length<=1200))throw Error("Respuestas inválidas.");
+    if(G*H>3000000)throw Error("Modelo demasiado grande para el navegador.");
+    this.grams=data.grams;
+    this.answers=data.answers;
+    this.hidden=H;
+    this.granIndex=new Map(this.grams.map((x,i)=>[x,i]));
+    this.idf=finiteArray(data.idf,G,"idf");
+    if(this.idf.some(v=>v<=0))throw Error("IDF inválido.");
+    const w=data.weights;
+    if(!w||typeof w!=="object")throw Error("Faltan los pesos de la red neuronal.");
+    this.W1=finiteArray(w.fc1_weight,H*G,"fc1_weight");
+    this.b1=finiteArray(w.fc1_bias,H,"fc1_bias");
+    this.W2=finiteArray(w.fc2_weight,A*H,"fc2_weight");
+    this.b2=finiteArray(w.fc2_bias,A,"fc2_bias");
+    this.name=data.name||"Red neuronal clasificadora";
+    this.baseline=null;
+    if(data.baseline_questions!==undefined||data.baseline_labels!==undefined){
+      if(!Array.isArray(data.baseline_questions)||!Array.isArray(data.baseline_labels)||
+         data.baseline_questions.length!==data.baseline_labels.length||
+         data.baseline_questions.length>5000||!data.baseline_questions.length)
+         throw Error("Ejemplos de similitud inválidos.");
+      const validLabel=x=>Number.isInteger(x)&&x>=0&&x<A;
+      if(!data.baseline_questions.every(x=>typeof x==="string"&&x.length<=500)||!data.baseline_labels.every(validLabel))
+        throw Error("Etiquetas de similitud inválidas.");
+      this.baseline=data.baseline_questions.map((q,i)=>({
+        question:q,label:data.baseline_labels[i],vector:this.vectorize(q)
+      }));
+    }
+  }
+  vectorize(text){
+    const features=ngrams(text);
+    const x=new Float32Array(this.grams.length);
+    let lengthSquared=0;
+    for(const [gram,count] of features){
+      const index=this.granIndex.get(gram);
+      if(index===undefined)continue;
+      const weight=(1+Math.log(count))*this.idf[index];
+      x[index]=weight;lengthSquared+=weight*weight;
+    }
+    if(lengthSquared>0){
+      const size=Math.sqrt(lengthSquared);
+      for(let i=0;i<x.length;i++)x[i]/=size;
+    }
+    return x;
+  }
+  predict(text){
+    if(!String(text||"").trim())throw Error("Escribe una pregunta.");
+    if([...text].length>350)throw Error("La pregunta es demasiado larga.");
+    const x=this.vectorize(text);
+    const H=this.hidden,G=x.length,A=this.answers.length;
+    const hidden=new Float32Array(H);
+    for(let j=0;j<H;j++){
+      let sum=this.b1[j],offset=j*G;
+      for(let k=0;k<G;k++)if(x[k])sum+=this.W1[offset+k]*x[k];
+      hidden[j]=Math.max(0,sum);
+    }
+    const logits=new Float32Array(A);
+    let best=0;
+    for(let i=0;i<A;i++){
+      let sum=this.b2[i],offset=i*H;
+      for(let j=0;j<H;j++)sum+=this.W2[offset+j]*hidden[j];
+      logits[i]=sum;
+      if(sum>logits[best])best=i;
+    }
+    const max=Math.max(...logits);
+    let total=0;
+    for(let i=0;i<A;i++){logits[i]=Math.exp(logits[i]-max);total+=logits[i];}
+    const confidence=logits[best]/total;
+    let nearest=null;
+    if(this.baseline){
+      let bestSim=-1,bestPair=null;
+      for(const pair of this.baseline){
+        let sim=0;
+        for(let j=0;j<G;j++)if(x[j])sim+=x[j]*pair.vector[j];
+        if(sim>bestSim){bestSim=sim;bestPair=pair;}
+      }
+      nearest={answer:this.answers[bestPair.label],question:bestPair.question,score:bestSim};
+    }
+    return {answer:this.answers[best],category:best,score:confidence,
+      matchedFeatures:x.some(v=>v!==0),nearest};
+  }
+}
