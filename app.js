@@ -24,7 +24,7 @@ if(!Array.isArray(history))history=[];
 history=history.filter(m=>m&&["user","bot"].includes(m.role)&&typeof m.text==="string").slice(-80);
 const $=id=>document.getElementById(id);
 const messages=$("messages"),input=$("message"),teachStatus=$("teach-status"),suggestions=$("suggestions");
-const welcome="¡Hola! Soy Mini IA 6.0. Sé algunas cosas sobre programación e inteligencia artificial. Pregúntame algo.";
+const welcome="¡Hola! Soy Mini IA. Este chat utiliza respuestas preparadas. Para probar mi red neuronal entrenada, abre el laboratorio Mini IA 9.0 de abajo.";
 let lastUnknown="";
 
 function storeHistory(){save(KEY_CHAT,history);}
