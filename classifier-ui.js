@@ -4,31 +4,54 @@ import {NeuralClassifier} from "./classifier.js";
 // Nunca se envían las preguntas ni los pesos a una API.
 const $=id=>document.getElementById(id);
 let classifier=null;
+let requestId=0;
+const DEFAULT_MODEL="./models/mi-ia-v9-clasificador.json";
 function setStatus(message,error=false){
   const el=$("classifier-status");
   el.textContent=message;
   el.style.color=error?"#ffaaa9":"#b8eedf";
 }
+function useModel(model,origin){
+  classifier=model;
+  $("classifier-submit").disabled=false;
+  $("classifier-model").textContent=origin+" · "+model.name+
+    " · "+model.answers.length+" respuestas · "+model.grams.length+" características";
+  setStatus("Modelo neuronal cargado. Ya puedes escribir preguntas.");
+}
+async function loadDefault(){
+  const id=++requestId;
+  setStatus("Cargando automáticamente tu clasificador neuronal de Kaggle...");
+  try{
+    const response=await fetch(DEFAULT_MODEL,{cache:"no-cache"});
+    if(!response.ok)throw Error("HTTP "+response.status);
+    const text=await response.text();
+    if(text.length>5_000_000)throw Error("Modelo demasiado grande.");
+    const candidate=new NeuralClassifier(JSON.parse(text));
+    if(id!==requestId)return;
+    useModel(candidate,"Modelo guardado en GitHub");
+  }catch(err){
+    if(id!==requestId)return;
+    setStatus("No se pudo cargar automáticamente: "+err.message+". Puedes elegir un JSON manualmente.",true);
+  }
+}
 $("classifier-file").addEventListener("change",async e=>{
   const file=e.target.files?.[0];
   if(!file)return;
-  classifier=null;
+  const id=++requestId;
   $("classifier-submit").disabled=true;
-  $("classifier-result").textContent="Primero carga tu modelo.";
   try{
     if(file.size>9_000_000)throw Error("El archivo supera 9 MB.");
-    setStatus("Cargando pesos del clasificador...");
-    const text=await file.text();
-    const model=new NeuralClassifier(JSON.parse(text));
-    classifier=model;
-    $("classifier-submit").disabled=false;
-    $("classifier-model").textContent=model.name+" · "+model.answers.length+" respuestas · "+model.grams.length+" características";
-    setStatus("Modelo neuronal cargado. Ya puedes hacer preguntas.");
+    setStatus("Cargando tu archivo de pesos...");
+    const model=new NeuralClassifier(JSON.parse(await file.text()));
+    if(id!==requestId)return;
+    useModel(model,"Modelo importado desde este dispositivo");
   }catch(err){
-    $("classifier-model").textContent="";
-    setStatus("No se pudo cargar el modelo: "+err.message,true);
+    if(id!==requestId)return;
+    $("classifier-submit").disabled=!classifier;
+    setStatus("No se pudo abrir el modelo: "+err.message,true);
   }
 });
+loadDefault();
 $("classifier-form").addEventListener("submit",e=>{
   e.preventDefault();
   if(!classifier){setStatus("Primero importa el JSON de Kaggle.",true);return;}
