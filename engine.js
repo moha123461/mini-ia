@@ -5,7 +5,7 @@ export const KNOWLEDGE = [
  {id:"despedida",q:["adios","hasta luego","nos vemos","hasta pronto"],answer:"¡Hasta pronto! 👋"},
  {id:"nombre",q:["como te llamas","cual es tu nombre","dime tu nombre","que nombre tienes"],answer:"Me llamo Mini IA 6.0."},
  {id:"identidad",q:["que eres","quien eres","eres una ia","eres un robot","eres una inteligencia artificial"],answer:"Soy Mini IA, un chatbot educativo que busca respuestas en una base de conocimientos local.",detail:"No soy ChatGPT. Esta página usa comparación de textos y respuestas preparadas, no genera respuestas libremente con el Transformer entrenado en Kaggle.",example:"Si preguntas «¿Qué es una red neuronal?», buscaré la respuesta más parecida entre los ejemplos que conozco."},
- {id:"creador",q:["quien te creo","quien te ha creado","como te crearon","quien te hizo","quien te programo"],answer:"Fui desarrollada como un proyecto educativo con Python, JavaScript y GitHub."},
+ {id:"creador",q:["quien te creo","quien te ha creado","como te crearon","quien te hizo","quien te programo","quien te desarrollo"],answer:"Fui desarrollada como un proyecto educativo con Python, JavaScript y GitHub."},
  {id:"sentimientos",q:["tienes sentimientos","puedes sentir","sientes emociones","tienes emociones"],answer:"No tengo sentimientos humanos. Soy un programa."},
  {id:"pensar",q:["puedes pensar","tienes conciencia","eres consciente","piensas como una persona"],answer:"Puedo procesar preguntas y buscar patrones, pero no pienso ni tengo conciencia como una persona."},
  {id:"capacidades",q:["que puedes hacer","en que ayudas","cuales son tus funciones","que sabes hacer","como puedes ayudarme"],answer:"Puedo responder preguntas sencillas sobre tecnología e IA, continuar algunas explicaciones y aprender nuevas respuestas que guardes en este navegador.",detail:"Si no conozco una pregunta, te lo diré. Puedes enseñármela en la sección «Enseñar a Mini IA»."},
@@ -33,7 +33,7 @@ export const KNOWLEDGE = [
  {id:"privacidad",q:["guardas mis mensajes","donde guardas mis datos","que haces con mis mensajes","mis datos son privados"],answer:"Este chat funciona en tu navegador. El historial y las respuestas que añadas se guardan localmente en el dispositivo; no se envían a una API de IA.",detail:"Puedes borrar el historial y los conocimientos añadidos desde esta página. Si compartes el dispositivo, otras personas podrían ver los datos guardados."}
 ];
 export const normalize = (input) => String(input||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[¿?¡!.,;:()[\]{}"'’]/g," ").replace(/\bq\b/g,"que").replace(/\bpq\b/g,"porque").replace(/\s+/g," ").trim();
-const stop = new Set(["el","la","los","las","un","una","de","del","y","es","en","por","para","que","me","te","tu","mi","lo","se","a","como","cual","puedes","puedo","algo","esto","eso","sobre","quiero","saber"]);
+const stop = new Set(["el","la","los","las","un","una","de","del","y","es","en","por","para","que","quien","me","te","tu","mi","lo","se","a","como","cual","puedes","puedo","algo","esto","eso","sobre","quiero","saber"]);
 function charFeatures(s) {
   const bag = new Map();
   for (const word of normalize(s).split(" ")) {
@@ -105,8 +105,14 @@ export class MiniEngine{
       if(score>best.score){if(best.entry&&best.entry.id!==this.entries[i].id)alternate=Math.max(alternate,best.score);best={score,entry:this.entries[i]};}
       else if(this.entries[i].id!==best.entry?.id)alternate=Math.max(alternate,score);
     }
-    // Rechazar preguntas lejanas o ambiguas. No interpretar puntuacion como probabilidad.
-    if(!best.entry||best.score<0.52||(best.score<0.68&&alternate>best.score-0.045)){
+    // Exigir que haya una palabra de contenido compartida con el ejemplo,
+    // salvo coincidencias textuales muy altas. Reduce respuestas fuera de tema.
+    const queryWords=wordFeatures(question);
+    const matchedWords=best.entry?wordFeatures(best.entry.q):new Map();
+    const shared=[...queryWords.keys()].some(w=>matchedWords.has(w));
+    // Rechazar preguntas lejanas o ambiguas. La puntuación no es una probabilidad.
+    if(!best.entry||best.score<0.52||(!shared&&best.score<0.78)||
+       (best.score<0.68&&alternate>best.score-0.045)){
       this.lastTopic=null;
       return {text:"Todavía no sé responder esa pregunta. Puedes enseñarme la respuesta abajo, en «Enseñar a Mini IA».",source:"unknown",topic:null,score:best.score};
     }
