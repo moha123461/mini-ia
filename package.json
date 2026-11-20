@@ -1,10 +1,10 @@
 {
   "name": "mini-ia",
-  "version": "7.1.0",
+  "version": "9.0.0",
   "private": true,
   "type": "module",
-  "description": "Chatbot educativo local basado en similitud de texto",
+  "description": "Mini IA: chat local, Transformer experimental y clasificador neuronal entrenado en Kaggle",
   "scripts": {
-    "test": "node --test test.mjs test-transformer.mjs test-modelo-real.mjs test-classifier.mjs"
+    "test": "node --test test.mjs test-transformer.mjs test-modelo-real.mjs test-classifier.mjs test-modelo-v9.mjs"
   }
 }
