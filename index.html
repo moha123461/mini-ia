@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101423">
-  <meta name="description" content="Mini IA 5.0: chat experimental que encuentra respuestas por similitud de texto, sin API ni servidor.">
-  <title>Mini IA 5.0 — Mi primera IA</title>
+  <meta name="description" content="Mini IA 6.0: chatbot educativo con base de conocimientos, explicaciones y aprendizaje local, sin API ni servidor.">
+  <title>Mini IA 6.0 — Mi primera IA</title>
   <style>
     :root{color-scheme:dark;--bg:#0b0e19;--panel:#141a2b;--panel2:#1d263c;--stroke:#303c56;--text:#f0f4fc;--muted:#a6b2c9;--accent:#9b9dff;--accent2:#6ee0bd;--user:#4b4bba}
     *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#1b2646 0,#0b0e19 57%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
@@ -18,73 +18,57 @@
     .composer{display:flex;gap:10px;padding:14px 18px 18px;border-top:1px solid var(--stroke)}.composer input{flex:1;min-width:0;padding:14px 15px;border:1px solid #445373;background:#10182c;border-radius:12px;color:white;font:inherit;outline:none}.composer input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #7779ff25}.composer button,.add{background:var(--accent);color:#11132b;border:0;border-radius:12px;padding:10px 20px;font:inherit;font-weight:750;cursor:pointer}.composer button:hover,.add:hover{background:#b2b3ff}.composer button:disabled{opacity:.5;cursor:not-allowed}
     details{background:#111828;border:1px solid var(--stroke);border-radius:15px;padding:16px 18px}summary{cursor:pointer;font-weight:700}details p,.note{font-size:13px;color:var(--muted);margin:10px 0}form.teach{display:grid;gap:10px;margin:15px 0 5px}form.teach label{font-size:12px;font-weight:700;color:var(--muted)}form.teach input{width:100%;border:1px solid #445373;border-radius:10px;padding:11px 12px;color:white;background:#0c1425;font:inherit;margin-top:4px}.add{justify-self:start}.footer{text-align:center;font-size:12px;color:#8793a9;padding:0 10px 6px}a{color:#b9bbff}.muted{opacity:.7}
     @media(max-width:550px){.app{padding:14px 10px}.brand h1{font-size:21px}.status{font-size:11px}.messages{padding:15px;max-height:56vh}.bubble{max-width:94%}.composer{padding:11px}.composer button{padding:10px 13px}}
+
+    .counter{font-size:11px;color:var(--muted);margin:5px 0 0;font-weight:400}
+    .actions,.data-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .chatbar{flex-wrap:wrap}
+    .softbutton,.chip,.file-label{min-height:42px;display:inline-flex;align-items:center;justify-content:center}
+    .composer-label{color:var(--muted);font-size:12px;font-weight:700}
+    .inline-help{margin-top:10px;background:transparent;border:1px solid #5a7e91;color:#b0eedc;border-radius:8px;cursor:pointer;font:inherit;font-size:12px;min-height:40px;padding:7px 12px}
+    .inline-help:hover{border-color:var(--accent2)}
+    .data-actions{margin-top:15px;padding:12px 0;border-top:1px solid var(--stroke)}
+    .file-label{font:inherit;font-size:12px;cursor:pointer;color:#d7e0f6;border:1px solid var(--stroke);padding:8px 12px;border-radius:10px}
+    #import-knowledge{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+    .learned-list{display:grid;gap:8px;margin-top:12px}
+    .learned-item{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:11px;background:#172039;border:1px solid var(--stroke)}
+    .learned-text{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}
+    .learned-text strong{font-size:13px}.learned-text span{font-size:12px;color:var(--muted)}
+    button:focus-visible,.file-label:focus-within,input:focus-visible,summary:focus-visible{outline:2px solid #9b9dff;outline-offset:3px}
+    @media(max-width:550px){.composer-label{display:none}.actions{width:100%}.data-actions{align-items:stretch}.learned-item{align-items:flex-start;flex-direction:column}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
   </style>
 </head>
 <body>
 <main class="app">
   <header class="top">
-    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 5.0</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
-    <div class="status">● Disponible en tu navegador</div>
+    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 6.0</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
+    <div class="status">● Funciona sin API</div>
   </header>
   <section class="chat" aria-label="Chat con Mini IA">
-    <div class="chatbar"><strong>Conversación</strong><button class="softbutton" type="button" id="clear">Borrar chat</button></div>
+    <div class="chatbar"><div><strong>Conversación</strong><p id="knowledge-count" class="counter" aria-live="polite">Cargando conocimientos...</p></div><div class="actions"><button class="softbutton" type="button" id="export-chat">Exportar chat</button><button class="softbutton" type="button" id="clear">Borrar chat</button></div></div>
     <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
-    <div class="suggestions" id="suggestions"><button class="chip" type="button">Hola</button><button class="chip" type="button">Dime tu nombre</button><button class="chip" type="button">Eres una IA</button><button class="chip" type="button">Que es Python</button></div>
-    <form class="composer" id="chat-form"><input id="message" type="text" maxlength="350" placeholder="Escribe una pregunta..." autocomplete="off" aria-label="Pregunta para Mini IA" required><button type="submit">Enviar</button></form>
+    <div class="suggestions" id="suggestions" aria-label="Preguntas sugeridas"></div>
+    <form class="composer" id="chat-form"><label for="message" class="composer-label">Pregunta</label><input id="message" type="text" maxlength="350" placeholder="Escribe una pregunta..." autocomplete="off" required><button type="submit">Enviar</button></form>
   </section>
-  <details>
-    <summary>➕ Añadir preguntas y respuestas</summary>
-    <p>Puedes enseñarle respuestas adicionales en <strong>este navegador</strong>. No se comparten con otros visitantes y no entrenan el Transformer.</p>
+  <details id="teach">
+    <summary>➕ Enseñar a Mini IA <span class="counter">(<span id="learned-count">0</span> respuestas añadidas)</span></summary>
+    <p>Si Mini IA no sabe responder algo, puedes añadir la respuesta correcta. Se guardará <strong>solo en este navegador</strong>; no entrenará el Transformer de Kaggle.</p>
     <form class="teach" id="teach-form">
-      <label>Pregunta nueva<input id="new-question" required maxlength="200" placeholder="Ej.: Qué es Mallorca"></label>
-      <label>Respuesta<input id="new-answer" required maxlength="500" placeholder="Ej.: Es una isla del Mediterráneo"></label>
+      <label>Pregunta<input id="new-question" required maxlength="200" placeholder="Ej.: Qué es Mallorca"></label>
+      <label>Respuesta<input id="new-answer" required maxlength="1000" placeholder="Ej.: Es una isla del Mediterráneo"></label>
       <button class="add" type="submit">Guardar respuesta</button>
-      <p id="teach-status" role="status"></p>
     </form>
+    <div class="data-actions">
+      <button class="softbutton" id="export-knowledge" type="button">Descargar mis respuestas</button>
+      <label for="import-knowledge" class="file-label">Importar respuestas (.json)</label>
+      <input type="file" id="import-knowledge" accept=".json,application/json" aria-label="Importar respuestas JSON">
+      <button class="softbutton" id="clear-knowledge" type="button">Borrar respuestas</button>
+    </div>
+    <p id="teach-status" role="status"></p>
+    <div id="learned-list" class="learned-list" aria-label="Respuestas añadidas"></div>
   </details>
-  <p class="footer">Proyecto educativo · Sin API · Respuestas mediante similitud de texto (TF-IDF). No es un modelo generativo como ChatGPT. Historial y conocimientos añadidos se guardan solo en este navegador.</p>
+  <p class="footer">Mini IA 6.0 · Proyecto educativo gratuito · Motor local de similitud de textos con respuestas preparadas. No es un modelo generativo ni ejecuta el Transformer de Kaggle. Tus datos se guardan en este navegador: evita introducir información privada en dispositivos compartidos.</p>
 </main>
-<script>
-'use strict';
-const temas = [
-  [['Hola','Buenas'],'Hola, en que puedo ayudarte'],
-  [['Adios','Hasta luego'],'Hasta pronto'],
-  [['Como te llamas','Cual es tu nombre'],'Me llamo Mini IA'],
-  [['Que eres','Quien eres'],'Soy una inteligencia artificial'],
-  [['Tienes sentimientos','Puedes sentir'],'No tengo sentimientos humanos'],
-  [['Quien te creo','Quien te ha creado'],'Me crearon utilizando Python'],
-  [['Que es Python','Explica Python'],'Python es un lenguaje de programacion'],
-  [['Que es la tecnologia','Define tecnologia'],'Es la aplicacion practica del conocimiento'],
-  [['Que es una red neuronal','Define red neuronal'],'Es un modelo que aprende patrones'],
-  [['Que puedes hacer','En que ayudas'],'Puedo generar textos sencillos'],
-  [['Que es un chatbot','Define chatbot'],'Es un programa que conversa con personas'],
-  [['Como se entrena una IA','Que es entrenar una IA'],'Es ajustar un modelo utilizando datos']
-];
-const STORAGE_EXTRA='mini-ia-v5-conocimientos',STORAGE_CHAT='mini-ia-v5-chat';
-function read(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}}
-let adicionales=read(STORAGE_EXTRA,[]); if(!Array.isArray(adicionales)) adicionales=[];
-let pares=[];let vocab=new Map(),vectores=[];
-function normalizar(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');}
-// Reproducción en el navegador de TF-IDF por n-gramas de caracteres 2-5 (char_wb).
-function ngramas(s){const texto=normalizar(s),m=new Map();for(const palabra of texto.split(' ')){if(!palabra)continue;const relleno=' '+palabra+' ';for(let n=2;n<=5;n++){for(let i=0;i<=relleno.length-n;i++){const g=relleno.slice(i,i+n);m.set(g,(m.get(g)||0)+1);}}}return m;}
-function preparar(){pares=temas.flatMap(([preguntas,respuesta])=>preguntas.map(p=>[p,respuesta])).concat(adicionales.filter(p=>Array.isArray(p)&&p.length===2&&typeof p[0]==='string'&&typeof p[1]==='string'));
-  const docs=pares.map(p=>ngramas(p[0]));const df=new Map();for(const d of docs){for(const g of d.keys())df.set(g,(df.get(g)||0)+1);}
-  vocab=new Map([...df].map(([g,count])=>[g,Math.log((1+docs.length)/(1+count))+1]));vectores=docs.map(d=>vector(d));}
-function vector(d){let norm=0;const result=new Map();for(const [g,tf] of d){const idf=vocab.get(g);if(!idf)continue;const val=tf*idf;norm+=val*val;result.set(g,val);}norm=Math.sqrt(norm)||1;for(const [g,v] of result)result.set(g,v/norm);return result;}
-function responder(pregunta){if(!pregunta.trim())return 'Escribe una pregunta.';const v=vector(ngramas(pregunta));let max=-1,indice=-1;for(let i=0;i<vectores.length;i++){let score=0;for(const [g,x] of v)score+=x*(vectores[i].get(g)||0);if(score>max){max=score;indice=i;}}
-  return max<0.25?'Todavia no se responder esa pregunta.':pares[indice][1];}
-const messages=document.getElementById('messages'),input=document.getElementById('message');
-let history=read(STORAGE_CHAT,[]);if(!Array.isArray(history))history=[];history=history.filter(m=>m&&['user','bot'].includes(m.role)&&typeof m.text==='string').slice(-80);
-function add(role,text,save=true){const bubble=document.createElement('div');bubble.className='bubble '+role;const label=document.createElement('div');label.className='byline';label.textContent=role==='user'?'Tú':'✦ Mini IA';const content=document.createElement('div');content.textContent=text;bubble.append(label,content);messages.appendChild(bubble);messages.scrollTop=messages.scrollHeight;
-  if(save){history.push({role,text});history=history.slice(-80);try{localStorage.setItem(STORAGE_CHAT,JSON.stringify(history));}catch{}}}
-function iniciar(){messages.replaceChildren();if(!history.length){add('bot','¡Hola! Soy Mini IA 5.0. Puedo responder preguntas sencillas que he aprendido. ¿Qué quieres saber?',false);}else for(const m of history)add(m.role,m.text,false);}
-function enviar(text){if(!text.trim())return;add('user',text);add('bot',responder(text));input.value='';input.focus();}
-document.getElementById('chat-form').addEventListener('submit',e=>{e.preventDefault();enviar(input.value);});
-document.getElementById('clear').addEventListener('click',()=>{history=[];try{localStorage.removeItem(STORAGE_CHAT);}catch{}iniciar();input.focus();});
-document.getElementById('suggestions').addEventListener('click',e=>{if(e.target.matches('button'))enviar(e.target.textContent);});
-document.getElementById('teach-form').addEventListener('submit',e=>{e.preventDefault();const pregunta=document.getElementById('new-question').value.trim(),respuesta=document.getElementById('new-answer').value.trim();if(!pregunta||!respuesta)return;
-  adicionales.push([pregunta,respuesta]);try{localStorage.setItem(STORAGE_EXTRA,JSON.stringify(adicionales));}catch{}preparar();e.target.reset();document.getElementById('teach-status').textContent='Respuesta añadida en este navegador. ¡Prueba a preguntársela!';});
-preparar();iniciar();
-</script>
+<script type="module" src="./app.js"></script>
 </body>
 </html>
