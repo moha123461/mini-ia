@@ -1,8 +1,18 @@
-# Mini IA 7.1
+# Mini IA 9.0
 
 Sitio: https://moha123461.github.io/mini-ia/
 
-## Modelo personal integrado automáticamente
+## Mini IA 9.0: modelo personal integrado
+
+**Modelo integrado y cargado automáticamente:** [models/mi-ia-v9-clasificador.json](./models/mi-ia-v9-clasificador.json). Este archivo procede del JSON exportado desde Kaggle, con **141.982 parámetros**, 1.078 características TF-IDF y 30 respuestas posibles.
+
+El JSON original de 1,3 MB se ha empaquetado en un formato más pequeño con valores **Float32** (sin volver a entrenar ni cambiar etiquetas), que `classifier.js` puede leer en el navegador. Se han reproducido **27 de 30 aciertos** en las mismas preguntas reservadas que se evaluaron en Kaggle; las tres preguntas falladas también coinciden. Los resultados de ese conjunto **no demuestran** capacidad para conversar fuera de los 30 temas.
+
+En la web, abre «Mini IA 9.0 — Probar mi red neuronal clasificadora». Los pesos se cargan desde GitHub Pages automáticamente; ya no hace falta importar el archivo. Se pueden importar modelos alternativos para comparar. Los cálculos se ejecutan localmente. **El chat principal de respuestas preparadas y el antiguo Transformer generativo siguen siendo otros sistemas independientes.**
+
+Las respuestas del clasificador provienen de **una lista cerrada de 30 categorías**. No puede inventar explicaciones nuevas, buscar en Internet ni garantizar una respuesta fiable para temas desconocidos. Los porcentajes Softmax no deben tratarse como medidas calibradas de seguridad o exactitud.
+
+## Transformer anterior, también integrado
 
 El archivo [models/mi-transformer-web.json](./models/mi-transformer-web.json) procede de los pesos exportados por el autor desde su notebook de Kaggle (16 tensores, 25.047 parámetros, vocabulario de 39 caracteres). Se carga automáticamente al abrir el Laboratorio Transformer. La inferencia se ejecuta en el navegador, sin API externa de IA; la descarga del archivo JSON se realiza desde GitHub Pages.
 
@@ -55,7 +65,7 @@ La nueva red neuronal no genera caracteres: es un **clasificador de 30 respuesta
 
 En tu ejecución real de Kaggle, la red neuronal consiguió **60/60 en entrenamiento, 25/30 en validación y 27/30 en prueba final**. La búsqueda por similitud obtuvo **60/60, 21/30 y 28/30**. Los resultados proceden de un conjunto pequeño y no demuestran comprensión general.
 
-El cuaderno genera `mi_ia_9_clasificador.pt`, `mi-ia-v9-clasificador.json` y `resultados-mini-ia-v9.json`. El modelo **ya se puede importar manualmente en la web**, pero no se publica automáticamente.
+El cuaderno genera `mi_ia_9_clasificador.pt`, `mi-ia-v9-clasificador.json` y `resultados-mini-ia-v9.json`. El modelo real ya está **publicado y se carga automáticamente**. La importación manual sigue disponible para comparar otros entrenamientos.
 
 ### Probar tu red neuronal en la web
 
