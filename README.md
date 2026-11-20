@@ -1,6 +1,22 @@
-# Mini IA 9.2
+# Mini IA 10.0
 
 Sitio: https://moha123461.github.io/mini-ia/
+
+## Mini IA 10.0 — Modo neuronal opcional en el chat principal
+
+El chat principal ahora incluye un interruptor **«Activar mi red neuronal en el chat»**. Está **desactivado por defecto**, para no modificar el funcionamiento clásico sin que el usuario lo elija. Al activarlo, Mini IA carga el clasificador neuronal ya entrenado en Kaggle, utilizando una única descarga compartida con el laboratorio.
+
+La selección de respuesta sigue estas prioridades:
+1. **Respuestas personales enseñadas** en el navegador y explicaciones de seguimiento del chat: se conservan y tienen prioridad.
+2. **Red neuronal:** si su filtro prudente reconoce un tema, se muestra la respuesta de una de sus 30 categorías con la etiqueta «Red neuronal».
+3. **Respuestas preparadas:** si el clasificador se abstiene, solo se muestra una respuesta clásica cuando su coincidencia es muy clara (puntuación 0,85 o mayor).
+4. **Desconocida:** en los demás casos, Mini IA admite que todavía no sabe responder y permite enseñar una respuesta al chat clásico.
+
+El interruptor guarda su estado solo en este navegador; no envía mensajes a servidores. Cuando hay un error de carga, el chat clásico continúa funcionando. Un clic en el interruptor no entrena nuevos pesos: **Mini IA 10.0 usa exactamente los pesos de la red neuronal 9.0**.
+
+La combinación es experimental y puede seguir equivocándose. Las puntuaciones de confianza no están calibradas y el conocimiento se limita a temas preparados. Para evitar sorpresas, el laboratorio de clasificación y el Transformer original siguen disponibles.
+
+Los archivos nuevos son `hybrid.js` (selección de respuestas), `model-loader.js` (descarga compartida) y `test-hybrid.mjs` (pruebas de compatibilidad). El chat conserva sus claves de almacenamiento y las respuestas que ya había aprendido localmente.
 
 ## Mini IA 9.2 — Mejor reconocimiento de variantes de preguntas
 
