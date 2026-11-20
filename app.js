@@ -27,7 +27,7 @@ if(!Array.isArray(history))history=[];
 history=history.filter(m=>m&&["user","bot"].includes(m.role)&&typeof m.text==="string").slice(-80);
 const $=id=>document.getElementById(id);
 const messages=$("messages"),input=$("message"),teachStatus=$("teach-status"),suggestions=$("suggestions");
-const welcome="¡Hola! Soy Mini IA. Puedes utilizar las respuestas preparadas o activar mi red neuronal entrenada con el interruptor de arriba. Mi conocimiento sigue limitado a temas educativos.";
+const welcome="¡Hola! Soy Mini IA 11.0. Puedo explicar 60 temas de programación e informática. También puedes activar la red neuronal experimental de 30 categorías o enseñarme nuevas respuestas.";
 let lastUnknown="";
 let neuralWanted=false;
 let neuralClassifier=null;
@@ -98,8 +98,8 @@ function renderHistory(){
 }
 function showSuggestions(contextual=false){
   suggestions.replaceChildren();
-  const options=contextual?["Explícalo mejor","Dame un ejemplo","Qué es un Transformer","Qué es Python"]:
-    ["Hola","Qué es una IA","Cómo se entrena una IA","Qué es Python"];
+  const options=contextual?["Explícalo mejor","Dame un ejemplo","Qué es HTML","Qué es Python"]:
+    ["Hola","Qué es HTML","Qué es DNS","Qué es una IA","Cómo se entrena una IA"];
   for(const label of options){
     const b=document.createElement("button");
     b.className="chip";b.type="button";b.textContent=label;
