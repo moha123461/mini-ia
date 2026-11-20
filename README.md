@@ -10,12 +10,14 @@ Sitio: https://moha123461.github.io/mini-ia/
 
 ## Importar tu propio modelo de Kaggle
 
-1. En Kaggle, abre el notebook con el archivo guardado mi_primera_ia.pt o mini_ia_v2.pt.
-2. Crea una celda con el código de [exportar_kaggle.py](./exportar_kaggle.py) y ejecútalo.
-3. Descarga mi-transformer-web.json desde los archivos de salida del notebook.
-4. En la web de Mini IA, abre la sección «Laboratorio: mi Transformer neuronal».
-5. Pulsa «Importar pesos del Transformer» y elige ese JSON.
-6. Prueba a generar texto empezando por «La » o por otro fragmento que exista en el vocabulario de tu modelo.
+1. En Kaggle, abre **el mismo cuaderno que has entrenado** y comprueba que todavía están disponibles las variables `modelo` y `caracteres`.
+2. Abre [exportar_kaggle.py](./exportar_kaggle.py), copia su código entero y pégalo en una **celda Code** al final del cuaderno. Ejecútalo.
+3. Si el modelo está cargado en la sesión, el exportador usa **los pesos actuales**, no una versión antigua. Guarda además `mini_ia_ultimo.pt` para que no los pierdas. Si se reinició Kaggle, busca el último checkpoint disponible (`mini_ia_v2.pt`, etc.).
+4. Desde los archivos de salida `/kaggle/working` descarga **mi-transformer-web.json**. Conserva también el archivo `.pt` como copia de seguridad.
+5. En la web de Mini IA, abre «Laboratorio: mi Transformer neuronal», selecciona «Importar pesos» y elige el JSON exportado.
+6. Escribe `La ` si tu modelo ha sido entrenado con el primer conjunto de frases; para el modelo de preguntas-respuestas, prueba `Usuario: Hola\nIA:` (solo si esos caracteres están en su vocabulario).
+
+**Atención:** exportar no mejora el entrenamiento, simplemente utiliza tus pesos actuales. Si la sesión se reinició y no guardaste Mini IA 4.0, los pesos de esa sesión no se podrán recuperar automáticamente; el exportador utilizará el checkpoint anterior disponible.
 
 Los archivos .pt no pueden cargarse directamente en el navegador. El script exporta el modelo a JSON compacto (cuantización de ocho bits). La importación se realiza únicamente en la sesión del navegador, no en un servidor.
 
