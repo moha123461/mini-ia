@@ -85,8 +85,8 @@ export class BrowserTransformer{
       const qkv=linear(k("self_attn.in_proj_weight"),3*H,H,x,k("self_attn.in_proj_bias"));
       xs.push(x);qs.push(qkv.subarray(0,H));ks.push(qkv.subarray(H,2*H));vs.push(qkv.subarray(2*H));
     }
-    let last;
-    for(let t=0;t<L;t++){
+    const t=L-1;
+    {
       const heads=new Float32Array(H);
       for(let head=0;head<4;head++){
         const scores=new Float32Array(t+1),offset=head*12;
@@ -110,9 +110,8 @@ export class BrowserTransformer{
       const result=linear(k("linear2.weight"),H,F,f,k("linear2.bias"));
       for(let i=0;i<H;i++)result[i]+=a[i];
       norm(result,k("norm2.weight"),k("norm2.bias"));
-      if(t===L-1)last=result;
+      return linear(w("salida.weight"),this.vocab.length,H,result,w("salida.bias"));
     }
-    return linear(w("salida.weight"),this.vocab.length,H,last,w("salida.bias"));
   }
   async generate(start,{length=70,temperature=0.6,progress=()=>{},signal}={}){
     if(!start||[...start].length>1000)throw Error("Introduce un comienzo de texto breve.");
