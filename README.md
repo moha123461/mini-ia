@@ -1,6 +1,14 @@
-# Mini IA 9.1
+# Mini IA 9.2
 
 Sitio: https://moha123461.github.io/mini-ia/
+
+## Mini IA 9.2 — Mejor reconocimiento de variantes de preguntas
+
+Sin reentrenar ni sustituir los **141.982 parámetros** del clasificador neuronal, se han añadido al filtro prudente expresiones que no indican un tema nuevo por sí solas: `significa`, `usaron`, `hicieron` y `sitio`. Así se evitan rechazos de preguntas conocidas formuladas de otra manera, manteniendo el bloqueo de términos de contenido desconocido.
+
+**Comprobación de regresión, no prueba independiente:** sobre las mismas 30 preguntas finales de la versión 9.0, el filtro anterior mostraba 21 respuestas correctas y rechazaba 9; el nuevo muestra **25 correctas y rechaza 5**, sin respuestas incorrectas mostradas en ese conjunto. En otras 24 preguntas ajenas usadas previamente para diagnosticar el sistema, rechaza las 24. Estas frases ya estaban disponibles durante el desarrollo y el ajuste del filtro, por lo que **no se puede afirmar que tenga esa precisión con nuevas preguntas reales**.
+
+El clasificador crudo sigue prediciendo las mismas categorías que en 9.0: **27/30** en la prueba original de Kaggle. El nuevo filtro podría seguir aceptando preguntas incorrectas y bloquear respuestas correctas. La siguiente evaluación debe utilizar **un conjunto nuevo** de preguntas conocidas y desconocidas que no haya servido para ajustar sus reglas.
 
 ## Mini IA 9.1 — Modo prudente para preguntas desconocidas
 
