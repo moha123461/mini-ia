@@ -1,9 +1,9 @@
-// Mini IA 6.0 - motor local: recuperacion de respuestas, no modelo generativo.
+// Mini IA - motor local: recuperacion de respuestas, no modelo generativo.
 // No conecta a servidores ni usa claves API.
 export const KNOWLEDGE = [
  {id:"saludo", q:["hola","buenas","buenos dias","buenas tardes","que tal","hey hola"], answer:"¡Hola! Soy Mini IA. ¿En qué te puedo ayudar?", detail:"Puedo explicarte conceptos básicos de inteligencia artificial y programación.", example:"Prueba con: ¿Qué es Python? o ¿Cómo se entrena una IA?"},
  {id:"despedida",q:["adios","hasta luego","nos vemos","hasta pronto"],answer:"¡Hasta pronto! 👋"},
- {id:"nombre",q:["como te llamas","cual es tu nombre","dime tu nombre","que nombre tienes"],answer:"Me llamo Mini IA 6.0."},
+ {id:"nombre",q:["como te llamas","cual es tu nombre","dime tu nombre","que nombre tienes"],answer:"Me llamo Mini IA. El chat principal usa respuestas preparadas y el laboratorio 9.0 usa una red neuronal entrenada."},
  {id:"identidad",q:["que eres","quien eres","eres una ia","eres un robot","eres una inteligencia artificial"],answer:"Soy Mini IA, un chatbot educativo que busca respuestas en una base de conocimientos local.",detail:"No soy ChatGPT. Esta página usa comparación de textos y respuestas preparadas, no genera respuestas libremente con el Transformer entrenado en Kaggle.",example:"Si preguntas «¿Qué es una red neuronal?», buscaré la respuesta más parecida entre los ejemplos que conozco."},
  {id:"creador",q:["quien te creo","quien te ha creado","como te crearon","quien te hizo","quien te programo","quien te desarrollo"],answer:"Fui desarrollada como un proyecto educativo con Python, JavaScript y GitHub."},
  {id:"sentimientos",q:["tienes sentimientos","puedes sentir","sientes emociones","tienes emociones"],answer:"No tengo sentimientos humanos. Soy un programa."},
