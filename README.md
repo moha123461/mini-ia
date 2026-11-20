@@ -45,6 +45,16 @@ Para probarlo: importa el nuevo cuaderno en un Notebook de Kaggle, pulsa «Run A
 
 El cuaderno guarda `mini_ia_v8_1.pt`, `mi-transformer-v8_1.json` y `evaluacion_mini_ia_v8_1.json`. No publiques el nuevo modelo en lugar del anterior hasta revisar el informe.
 
+## Mini IA 9.0 — Nuevo experimento de clasificación
+
+Las capturas de Kaggle confirmaron que el Transformer v8.1 obtuvo **0/30** aciertos: el error de entrenamiento cayó, mientras que el de validación volvió a subir (de 2,383 a 3,961). Este es un ejemplo de sobreajuste. El recuperador TF-IDF acertó **28/30** en el mismo conjunto.
+
+[**Abrir el cuaderno Mini_IA_9_Clasificador.ipynb**](./Mini_IA_9_Clasificador.ipynb) o [ver entrenar_v9_clasificador.py](./entrenar_v9_clasificador.py).
+
+La nueva red neuronal no genera caracteres: es un **clasificador de 30 respuestas cerradas** (vectorización TF-IDF de n-gramas, capa oculta con ReLU y capa de salida de 30 categorías). Trabaja con **las mismas preguntas de entrenamiento, validación y prueba** que v8.1. La red aprenderá pesos nuevos en Kaggle; se compara con el recuperador usando los mismos 30 ejemplos finales.
+
+Al terminar crea `mi_ia_9_clasificador.pt`, `mi-ia-v9-clasificador.json` y `resultados-mini-ia-v9.json`. **Los archivos aún no existen hasta ejecutar Kaggle.** El JSON es un formato de exportación para integrar después; **la web actual no lo admite todavía**. No sustituyas el Transformer publicado hasta analizar los nuevos resultados.
+
 ## Dos sistemas diferentes
 
 **Chat principal:** recupera respuestas preparadas mediante similitud de texto. Incluye unos 30 temas, historial local y aprendizaje de respuestas personalizadas. No genera lenguaje con una red neuronal.
@@ -73,6 +83,7 @@ Los archivos .pt no pueden cargarse directamente en el navegador. El script expo
 - exportar_kaggle.py: conversión de checkpoints anteriores de PyTorch.
 - entrenar_v8.py y Mini_IA_8_Entrenamiento.ipynb: experimento original v8.0.
 - entrenar_v8_1.py y Mini_IA_8_1_Entrenamiento.ipynb: corrección experimental y comparador de recuperación.
+- entrenar_v9_clasificador.py y Mini_IA_9_Clasificador.ipynb: clasificador neuronal supervisado, con evaluación separada.
 - test.mjs, test-transformer.mjs y test-modelo-real.mjs: pruebas con Node.js.
 - .github/workflows/check.yml: ejecución automática de pruebas.
 
