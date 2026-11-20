@@ -10,6 +10,27 @@ El modelo importado utiliza el vocabulario de las frases educativas iniciales: *
 
 Los pesos ahora forman parte de un repositorio **público**. Si entrenas otra versión, tendrás que exportar el nuevo JSON y actualizar el archivo del repositorio para sustituir los pesos predeterminados.
 
+## Nuevo: entrenamiento experimental Mini IA 8.0
+
+El siguiente experimento no sustituye automáticamente la web ni los pesos de la versión 7.1.
+
+- [Mini_IA_8_Entrenamiento.ipynb](./Mini_IA_8_Entrenamiento.ipynb): cuaderno listo para importar en Kaggle y ejecutar celda a celda.
+- [entrenar_v8.py](./entrenar_v8.py): el mismo entrenamiento en un archivo Python reproducible.
+
+El experimento utiliza **30 temas, 60 maneras de preguntar para entrenamiento, 30 para validación y otras 30 para prueba final**. Las formas de las preguntas se separan para no volver a evaluar exactamente los ejemplos que se entrenan. Las respuestas de cada tema sí aparecen entre los datos de entrenamiento; la prueba mide generalización limitada de la formulación, no inteligencia general.
+
+En Kaggle, importa el cuaderno `.ipynb` y ejecuta las celdas en orden. Al terminar, en `/kaggle/working` aparecen:
+
+- `mini_ia_v8.pt`: pesos originales para recuperar o continuar el entrenamiento.
+- `mi-transformer-v8.json`: pesos comprimidos compatibles con el laboratorio de la web.
+- `evaluacion_mini_ia_v8.json`: pérdida de validación y respuestas a las 30 preguntas de prueba.
+
+En el Laboratorio Transformer, selecciona **«Opcional: importar otro modelo»** para comprobar la versión v8 sin publicar todavía. El modelo v8 reserva el símbolo `¤` para rellenar secuencias durante el entrenamiento; la inferencia de JavaScript excluye ese carácter de la generación.
+
+### Limitaciones del experimento
+
+La arquitectura sigue siendo muy pequeña (48 dimensiones, una capa y contexto de 48 caracteres). Los resultados pueden seguir siendo pobres o memorizar las respuestas. No se deben comparar directamente puntuaciones de entrenamiento de conjuntos de datos diferentes. El entrenamiento requiere ejecutar Kaggle; un commit en GitHub no entrena el modelo.
+
 ## Dos sistemas diferentes
 
 **Chat principal:** recupera respuestas preparadas mediante similitud de texto. Incluye unos 30 temas, historial local y aprendizaje de respuestas personalizadas. No genera lenguaje con una red neuronal.
@@ -35,8 +56,9 @@ Los archivos .pt no pueden cargarse directamente en el navegador. El script expo
 - app.js y engine.js: chatbot de respuestas preparadas.
 - transformer.js: inferencia del Transformer en JavaScript.
 - transformer-ui.js: selector de modelo, generación y controles.
-- exportar_kaggle.py: conversión de los checkpoints de PyTorch.
-- test.mjs y test-transformer.mjs: pruebas con Node.js.
+- exportar_kaggle.py: conversión de checkpoints anteriores de PyTorch.
+- entrenar_v8.py y Mini_IA_8_Entrenamiento.ipynb: entrenamiento y evaluación de la siguiente versión.
+- test.mjs, test-transformer.mjs y test-modelo-real.mjs: pruebas con Node.js.
 - .github/workflows/check.yml: ejecución automática de pruebas.
 
 Para probar localmente, usa el comando «npm test» con Node.js 22.
