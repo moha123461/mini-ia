@@ -1,6 +1,6 @@
 {
   "name": "mini-ia",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "private": true,
   "type": "module",
   "description": "Mini IA: chat local, Transformer experimental y clasificador neuronal entrenado en Kaggle",
