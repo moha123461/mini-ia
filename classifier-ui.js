@@ -1,11 +1,10 @@
-import {NeuralClassifier} from "./classifier.js?v=9.3";
+import {NeuralClassifier,loadDefaultClassifier} from "./model-loader.js?v=10.0";
 
 // El modelo no se almacena en la web: se importa desde el navegador.
 // Nunca se envían las preguntas ni los pesos a una API.
 const $=id=>document.getElementById(id);
 let classifier=null;
 let requestId=0;
-const DEFAULT_MODEL="./models/mi-ia-v9-clasificador.json";
 function setStatus(message,error=false){
   const el=$("classifier-status");
   el.textContent=message;
@@ -22,11 +21,7 @@ async function loadDefault(){
   const id=++requestId;
   setStatus("Cargando automáticamente tu clasificador neuronal de Kaggle...");
   try{
-    const response=await fetch(DEFAULT_MODEL,{cache:"no-cache"});
-    if(!response.ok)throw Error("HTTP "+response.status);
-    const text=await response.text();
-    if(text.length>5_000_000)throw Error("Modelo demasiado grande.");
-    const candidate=new NeuralClassifier(JSON.parse(text));
+    const candidate=await loadDefaultClassifier();
     if(id!==requestId)return;
     useModel(candidate,"Modelo guardado en GitHub");
   }catch(err){
