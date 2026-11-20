@@ -125,7 +125,7 @@ export class BrowserTransformer{
     for(let i=0;i<length;i++){
       if(signal?.aborted)throw Error("Generación cancelada.");
       const logits=this.logits(tokens.slice(-48));
-      const max=Math.max(...logits)/temperature;
+      const max=Math.max(...logits.filter((_,index)=>!this.excludeIds.has(index)))/temperature;
       const probs=logits.map((n,index)=>this.excludeIds.has(index)?0:Math.exp(n/temperature-max));
       let total=0;for(const p of probs)total+=p;
       if(!(total>0)||!Number.isFinite(total))throw Error("No se pueden calcular probabilidades válidas.");
