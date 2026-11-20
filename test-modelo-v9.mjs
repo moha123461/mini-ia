@@ -185,3 +185,19 @@ test("modo prudente rechaza preguntas nuevas sin modificar los pesos",()=>{
     assert.equal(safe.safeAnswer,answer,question);
   }
 });
+
+
+test("v9.2: reformulaciones frecuentes de preguntas aprendidas",()=>{
+  const clf=new NeuralClassifier(model);
+  const cases=[
+    ["que significa ia","Una ia aprende patrones."],
+    ["que significa entrenar","Entrenar es ajustar pesos."],
+    ["con que te hicieron","Uso Python."],
+    ["que es un sitio web","La web muestra paginas."]
+  ];
+  for(const [question,expected] of cases){
+    const result=clf.answerSafely(question);
+    assert.equal(result.accepted,true,"No reconoció: "+question);
+    assert.equal(result.safeAnswer,expected,"Respuesta incorrecta: "+question);
+  }
+});
