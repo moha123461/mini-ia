@@ -43,3 +43,12 @@ test("se rechazan pesos corruptos y caracteres desconocidos",()=>{
   const model=new BrowserTransformer(fakeModel());
   assert.throws(()=>model.encode("¿"),/desconocidos/);
 });
+
+test("no se generan tokens de relleno del entrenamiento v8",async()=>{
+  const model=fakeModel();
+  model.exclude_tokens=["a"];
+  const transformer=new BrowserTransformer(model);
+  const result=await transformer.generate("ab",{length:15,temperature:1});
+  assert.equal([...result].length,15);
+  assert.ok([...result].every(c=>c==="b"||c==="c"));
+});
