@@ -79,7 +79,8 @@
   <details id="transformer-lab">
     <summary>🧠 Laboratorio: mi Transformer neuronal (experimental)</summary>
     <p>Esta sección ejecuta <strong>una red neuronal Transformer real</strong> con sus propios pesos. El modelo predice el siguiente carácter; <strong>no funciona como un asistente conversacional avanzado</strong>. El chat de arriba seguirá funcionando de forma independiente.</p>
-    <p>Tu <strong>Transformer entrenado en Kaggle se carga automáticamente</strong> desde este repositorio de GitHub. Los cálculos se realizan en tu navegador, sin API de IA ni servidor de inferencia. Si vuelves a entrenar otro modelo, puedes importarlo manualmente desde aquí o seguir <a href="https://github.com/moha123461/mini-ia/blob/main/exportar_kaggle.py" target="_blank" rel="noopener noreferrer">estas instrucciones de exportación</a>.</p>
+    <p>Tu <strong>Transformer entrenado en Kaggle se carga automáticamente</strong> desde GitHub. Los cálculos se realizan en tu navegador, sin API de IA ni servidor de inferencia. Si vuelves a entrenar otro modelo, puedes importarlo manualmente desde aquí.</p>
+    <p><strong>Nuevo:</strong> prepara un modelo con mejor evaluación desde el <a href="https://github.com/moha123461/mini-ia/blob/main/Mini_IA_8_Entrenamiento.ipynb" target="_blank" rel="noopener noreferrer">cuaderno de entrenamiento Mini IA 8.0</a>. Separa los datos de entrenamiento, validación y prueba; guarda el mejor modelo y genera un JSON compatible con este laboratorio. Cuando termine el entrenamiento en Kaggle, importa el archivo <code>mi-transformer-v8.json</code>. <strong>Este modelo nuevo no se publica automáticamente:</strong> puedes compararlo antes de sustituir el actual.</p>
     <div class="transformer-tools">
       <label for="transformer-file">Opcional: importar otro modelo (.json)</label>
       <input id="transformer-file" type="file" accept=".json,application/json" aria-describedby="transformer-status">
