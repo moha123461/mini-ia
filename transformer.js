@@ -68,6 +68,10 @@ export class BrowserTransformer{
     this.context=48;
     this.name=model.name||"Modelo importado";
     this.origin=model.origin||"Checkpoint exportado desde Kaggle";
+    // No permitir que se generen símbolos usados exclusivamente para relleno.
+    this.excludeIds=new Set((Array.isArray(model.exclude_tokens)?model.exclude_tokens:[])
+      .map(char=>this.tokenIds.get(char)).filter(Number.isInteger));
+    if(this.excludeIds.size>=this.vocab.length)throw Error("Todos los tokens están excluidos.");
   }
   encode(text){
     const chars=[...text],missing=[...new Set(chars.filter(c=>!this.tokenIds.has(c)))];
@@ -122,8 +126,9 @@ export class BrowserTransformer{
       if(signal?.aborted)throw Error("Generación cancelada.");
       const logits=this.logits(tokens.slice(-48));
       const max=Math.max(...logits)/temperature;
-      const probs=logits.map(n=>Math.exp(n/temperature-max));
+      const probs=logits.map((n,index)=>this.excludeIds.has(index)?0:Math.exp(n/temperature-max));
       let total=0;for(const p of probs)total+=p;
+      if(!(total>0)||!Number.isFinite(total))throw Error("No se pueden calcular probabilidades válidas.");
       let random=Math.random()*total,next=probs.length-1;
       for(let j=0;j<probs.length;j++){random-=probs[j];if(random<=0){next=j;break;}}
       tokens.push(next);generated+=this.vocab[next];
