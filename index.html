@@ -40,7 +40,7 @@
     .transformer-tools{display:grid;gap:10px;padding-top:8px}
     .transformer-tools>label,.transformer-tools form>label{font-size:12px;font-weight:700;color:var(--muted)}
     #transformer-file{max-width:100%;font:inherit;color:var(--text);padding:10px;background:#111b30;border:1px solid var(--stroke);border-radius:10px}
-    .transformer-tools select,.transformer-tools input[type=text]{width:100%;padding:12px;border-radius:10px;border:1px solid #445373;background:#111b30;color:var(--text);font:inherit}
+    .transformer-tools select,.transformer-tools textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #445373;background:#111b30;color:var(--text);font:inherit}
     .transformer-examples{padding:4px 0 12px}
     .transformer-output{margin:4px 0;background:#080f1e;border:1px solid #34415a;border-radius:12px;padding:16px;color:#c9eedc;min-height:110px;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
     .transformer-tools .actions{margin-top:4px}
@@ -79,7 +79,7 @@
   <details id="transformer-lab">
     <summary>🧠 Laboratorio: mi Transformer neuronal (experimental)</summary>
     <p>Esta sección ejecuta <strong>una red neuronal Transformer real</strong> con sus propios pesos. El modelo predice el siguiente carácter; <strong>no funciona como un asistente conversacional avanzado</strong>. El chat de arriba seguirá funcionando de forma independiente.</p>
-    <p>Primero carga un archivo <code>.json</code> con los pesos del modelo. Puedes usar el <strong>modelo de demostración</strong> del proyecto o exportar el que entrenaste en Kaggle siguiendo <a href="https://github.com/moha123461/mini-ia/blob/main/exportar_kaggle.py" target="_blank" rel="noopener noreferrer">estas instrucciones de exportación</a>. El archivo se procesa solo en el navegador.</p>
+    <p>Primero carga un archivo <code>.json</code> con los pesos del modelo. Puedes descargar el <strong>modelo de demostración</strong> que te comparto en el chat, o exportar el que entrenaste en Kaggle siguiendo <a href="https://github.com/moha123461/mini-ia/blob/main/exportar_kaggle.py" target="_blank" rel="noopener noreferrer">estas instrucciones de exportación</a>. El archivo se procesa solo en el navegador.</p>
     <div class="transformer-tools">
       <label for="transformer-file">Importar pesos del Transformer (.json)</label>
       <input id="transformer-file" type="file" accept=".json,application/json" aria-describedby="transformer-status">
@@ -87,7 +87,7 @@
       <p id="transformer-status" class="note" role="status">No hay ningún modelo cargado.</p>
       <form id="transformer-form" class="teach">
         <label for="transformer-prompt">Inicio del texto</label>
-        <input id="transformer-prompt" type="text" value="La " maxlength="120" autocomplete="off" required>
+        <textarea id="transformer-prompt" rows="2" maxlength="120" required>La </textarea>
         <div class="suggestions transformer-examples">
           <button type="button" class="chip" data-try-transformer="La ">La </button>
           <button type="button" class="chip" data-try-transformer="Python ">Python </button>
