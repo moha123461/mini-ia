@@ -1,4 +1,4 @@
-import {MiniEngine, KNOWLEDGE, normalize} from "./engine.js";
+import {MiniEngine, KNOWLEDGE, normalize} from "./engine.js?v=11.0";
 import {loadDefaultClassifier} from "./model-loader.js?v=10.0";
 import {chooseResponse} from "./hybrid.js?v=10.0";
 
