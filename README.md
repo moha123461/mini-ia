@@ -1,41 +1,40 @@
-# Mini IA 6.0
+# Mini IA 7.0
 
-Proyecto educativo de chatbot desarrollado con JavaScript, publicado en GitHub Pages y sin dependencias ni API de pago.
+Sitio: https://moha123461.github.io/mini-ia/
 
-**Abrir:** https://moha123461.github.io/mini-ia/
+## Dos sistemas diferentes
 
-## Qué hace
+**Chat principal:** recupera respuestas preparadas mediante similitud de texto. Incluye unos 30 temas, historial local y aprendizaje de respuestas personalizadas. No genera lenguaje con una red neuronal.
 
-- Compara preguntas con una base de 30 temas educativos sobre programación e inteligencia artificial.
-- Reconoce varias formas de preguntar y puede continuar algunas explicaciones con «Dame un ejemplo» o «Explícalo mejor».
-- Indica cuando no reconoce una pregunta, en lugar de ofrecer una respuesta aleatoria.
-- Permite enseñar preguntas y respuestas adicionales, corregirlas, borrarlas e importarlas o exportarlas como JSON.
-- Permite exportar el historial del chat. Los datos propios se guardan en el almacenamiento local del navegador.
+**Laboratorio Transformer (nuevo):** permite cargar pesos de un Transformer real entrenado en PyTorch y generar caracteres sin servidores ni API. Su arquitectura es la del cuaderno inicial: dimensión 48, 4 cabezas de atención, una capa y contexto de 48 caracteres. Con el vocabulario inicial tiene 25.047 parámetros.
 
-## Limitaciones importantes
+## Importar tu propio modelo de Kaggle
 
-Este **no es un modelo de lenguaje generativo**. Su motor actual recupera respuestas mediante similitud de texto. El pequeño Transformer entrenado por separado en Kaggle todavía **no está integrado**: para incorporarlo hay que exportar su arquitectura, vocabulario y pesos y desarrollar un sistema de inferencia compatible.
+1. En Kaggle, abre el notebook con el archivo guardado mi_primera_ia.pt o mini_ia_v2.pt.
+2. Crea una celda con el código de [exportar_kaggle.py](./exportar_kaggle.py) y ejecútalo.
+3. Descarga mi-transformer-web.json desde los archivos de salida del notebook.
+4. En la web de Mini IA, abre la sección «Laboratorio: mi Transformer neuronal».
+5. Pulsa «Importar pesos del Transformer» y elige ese JSON.
+6. Prueba a generar texto empezando por «La » o por otro fragmento que exista en el vocabulario de tu modelo.
 
-La base de conocimientos es limitada: incluso cuando reconoce una pregunta, la respuesta puede ser incompleta o equivocada. No está conectado a Internet para obtener información reciente.
+Los archivos .pt no pueden cargarse directamente en el navegador. El script exporta el modelo a JSON compacto (cuantización de ocho bits). La importación se realiza únicamente en la sesión del navegador, no en un servidor.
 
-## Estructura
+## Archivos
 
-- `index.html`: interfaz, estilos y accesibilidad.
-- `app.js`: interacción, historial y conocimientos personalizados.
-- `engine.js`: reconocimiento de preguntas y respuestas locales.
-- `test.mjs`: pruebas de funcionamiento.
-- `.github/workflows/check.yml`: pruebas automáticas en GitHub Actions.
+- index.html: interfaz y estilos.
+- app.js y engine.js: chatbot de respuestas preparadas.
+- transformer.js: inferencia del Transformer en JavaScript.
+- transformer-ui.js: selector de modelo, generación y controles.
+- exportar_kaggle.py: conversión de los checkpoints de PyTorch.
+- test.mjs y test-transformer.mjs: pruebas con Node.js.
+- .github/workflows/check.yml: ejecución automática de pruebas.
 
-## Pruebas
+Para probar localmente, usa el comando «npm test» con Node.js 22.
 
-Con Node.js 22 o superior:
+## Limitaciones y privacidad
 
-```bash
-npm test
-```
+El pequeño Transformer predice caracteres y produce texto a menudo incorrecto. No es comparable a ChatGPT. El chat principal sigue utilizando respuestas guardadas; enseñar nuevas preguntas allí no modifica los pesos de la red neuronal.
 
-No necesita instalar paquetes. GitHub Pages publica los cambios de la rama `main` si el repositorio tiene configurado «Deploy from a branch».
+El historial y los conocimientos que añade el usuario se almacenan en el navegador. Los pesos del Transformer importados también se procesan localmente, pero no se guardan de forma permanente al actualizar la página. Evita introducir información privada en dispositivos compartidos. GitHub Pages puede registrar información técnica del acceso.
 
-## Privacidad
-
-Las preguntas escritas no se envían a un modelo o API externa; se procesan en el navegador. Los datos guardados en almacenamiento local pueden verlos otras personas que usen el mismo perfil del navegador. GitHub Pages, como proveedor de alojamiento, puede registrar datos técnicos de acceso.
+Proyecto exclusivamente educativo.
