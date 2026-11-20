@@ -1,8 +1,11 @@
 import {MiniEngine, KNOWLEDGE, normalize} from "./engine.js";
+import {loadDefaultClassifier} from "./model-loader.js?v=10.0";
+import {chooseResponse} from "./hybrid.js?v=10.0";
 
 // Todo se ejecuta en el navegador. No se envían mensajes a un servidor.
 const KEY_EXTRA="mini-ia-v6-conocimientos";
 const KEY_CHAT="mini-ia-v6-chat";
+const KEY_NEURAL="mini-ia-neural-chat-enabled";
 function read(key,fallback){
   try{const raw=localStorage.getItem(key);return raw===null?fallback:JSON.parse(raw);}catch{return fallback;}
 }
@@ -24,8 +27,42 @@ if(!Array.isArray(history))history=[];
 history=history.filter(m=>m&&["user","bot"].includes(m.role)&&typeof m.text==="string").slice(-80);
 const $=id=>document.getElementById(id);
 const messages=$("messages"),input=$("message"),teachStatus=$("teach-status"),suggestions=$("suggestions");
-const welcome="¡Hola! Soy Mini IA. Este chat utiliza respuestas preparadas. Para probar mi red neuronal entrenada, abre el laboratorio Mini IA 9.0 de abajo.";
+const welcome="¡Hola! Soy Mini IA. Puedes utilizar las respuestas preparadas o activar mi red neuronal entrenada con el interruptor de arriba. Mi conocimiento sigue limitado a temas educativos.";
 let lastUnknown="";
+let neuralWanted=false;
+let neuralClassifier=null;
+let neuralRequest=0;
+function neuralStatus(message){
+  $("neural-chat-status").textContent=message;
+}
+async function enableNeuralChat(){
+  const request=++neuralRequest;
+  neuralStatus("Cargando red neuronal entrenada...");
+  try{
+    const model=await loadDefaultClassifier();
+    if(request!==neuralRequest||!neuralWanted)return;
+    neuralClassifier=model;
+    neuralStatus("Red neuronal activada · 30 categorías. Tus respuestas personales tienen prioridad.");
+  }catch(err){
+    if(request!==neuralRequest||!neuralWanted)return;
+    neuralClassifier=null;
+    neuralStatus("No se pudo cargar la red neuronal: "+err.message+". Seguirá funcionando el chat clásico.");
+  }
+}
+$("neural-mode").addEventListener("change",()=>{
+  neuralWanted=$("neural-mode").checked;
+  save(KEY_NEURAL,neuralWanted);
+  if(neuralWanted)enableNeuralChat();
+  else {
+    neuralRequest++;
+    neuralClassifier=null;
+    neuralStatus("Modo clásico: utiliza respuestas preparadas y las que le enseñes.");
+  }
+});
+neuralWanted=read(KEY_NEURAL,false)===true;
+$("neural-mode").checked=neuralWanted;
+if(neuralWanted)enableNeuralChat();
+else neuralStatus("Modo clásico: utiliza respuestas preparadas y las que le enseñes.");
 
 function storeHistory(){save(KEY_CHAT,history);}
 function add(role,text,remember=true,source=""){
@@ -33,7 +70,7 @@ function add(role,text,remember=true,source=""){
   bubble.className="bubble "+role;
   const label=document.createElement("div");
   label.className="byline";
-  label.textContent=role==="user"?"Tú":"✦ Mini IA";
+  label.textContent=role==="user"?"Tú":source==="neural"?"✦ Mini IA · Red neuronal":"✦ Mini IA";
   const body=document.createElement("div");
   body.textContent=text;
   bubble.append(label,body);
@@ -74,7 +111,9 @@ function send(text){
   const question=text.trim().slice(0,350);
   if(!question)return;
   add("user",question);
-  const result=engine.answer(question);
+  const base=engine.answer(question);
+  const result=neuralWanted?chooseResponse(question,base,neuralClassifier):base;
+  if(result.source==="neural"||result.source==="unknown")engine.lastTopic=null;
   lastUnknown=result.source==="unknown"?question:"";
   add("bot",result.text,true,result.source);
   showSuggestions(Boolean(result.topic));
