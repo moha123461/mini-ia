@@ -47,6 +47,21 @@ function unpackWeights(model,G,H,A){
     fc2_weight:take(sizes[2]),fc2_bias:take(sizes[3])
   };
 }
+// Palabras frecuentes: no deciden por sí solas el tema de una pregunta.
+const COMMON_WORDS=new Set([
+  "a","al","algo","con","como","cual","cuando","cuanto","de","del","dime",
+  "el","ella","en","eres","es","esta","estoy","explica","explicame","hacer",
+  "haces","hace","hay","la","las","le","lo","los","me","mi","mis","nos","o",
+  "para","por","puedo","puedes","que","quien","quiero","se","ser","si",
+  "sirve","sobre","su","sus","te","tengo","tiene","tienes","tu","tus",
+  "un","una","unas","uno","unos","y","yo","define","sabes","saber",
+  "dias","dia","buenos","buenas"
+]);
+function importantWords(text){
+  return (norm(text).match(/[a-z0-9]+/g)||[])
+    .filter(word=>word.length>=2&&!COMMON_WORDS.has(word));
+}
+function stem(word){return word.length>4?word.slice(0,4):word;}
 export class NeuralClassifier{
   constructor(data){
     if(data?.format!=="mini-ia-clasificador-v1")throw Error("El archivo no es un modelo clasificador de Mini IA 9.0.");
@@ -74,6 +89,7 @@ export class NeuralClassifier{
     this.b2=safe(w.fc2_bias,A,"fc2_bias");
     this.name=data.name||"Red neuronal clasificadora";
     this.baseline=null;
+    this.domainTerms=new Set();
     if(data.baseline_questions!==undefined||data.baseline_labels!==undefined){
       if(!Array.isArray(data.baseline_questions)||!Array.isArray(data.baseline_labels)||
          data.baseline_questions.length!==data.baseline_labels.length||
@@ -85,6 +101,9 @@ export class NeuralClassifier{
       this.baseline=data.baseline_questions.map((q,i)=>({
         question:q,label:data.baseline_labels[i],vector:this.vectorize(q)
       }));
+      // Anclajes de contenido conocidos, solo desde datos de entrenamiento.
+      for(const phrase of [...data.baseline_questions,...this.answers])
+        for(const word of importantWords(phrase))this.domainTerms.add(stem(word));
     }
   }
   vectorize(text){
@@ -138,5 +157,25 @@ export class NeuralClassifier{
     }
     return {answer:this.answers[best],category:best,score:confidence,
       matchedFeatures:x.some(v=>v!==0),nearest};
+  }
+  // Decisión prudente: no altera el resultado crudo de la red neuronal.
+  // No garantiza detectar todos los temas fuera de la distribución.
+  answerSafely(question){
+    const raw=this.predict(question);
+    let reason=null;
+    const semanticWords=importantWords(question);
+    const unseen=semanticWords.filter(word=>!this.domainTerms.has(stem(word)));
+    const similarity=raw.nearest?.score??0;
+    // Estos límites son reglas conservadoras de demostración, NO calibración.
+    if(!this.baseline)reason="Este archivo no incluye ejemplos de entrenamiento para verificar el tema.";
+    else if(!raw.matchedFeatures)reason="No he reconocido patrones de esta pregunta.";
+    else if(unseen.length)reason="La pregunta incluye conceptos que todavía no conozco.";
+    else if(similarity<0.43)reason="La pregunta se parece poco a los ejemplos que conozco.";
+    else if(raw.score<0.48)reason="La red neuronal no ha identificado una respuesta suficientemente clara.";
+    return {
+      ...raw,accepted:reason===null,reason,
+      safeAnswer:reason?"Todavía no sé responder esa pregunta con suficiente seguridad.":raw.answer,
+      unknownWords:unseen
+    };
   }
 }
