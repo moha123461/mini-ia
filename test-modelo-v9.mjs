@@ -158,3 +158,30 @@ test("se detectan preguntas sin características reconocidas",()=>{
   const r=clf.predict("🪐🪐");
   assert.equal(r.matchedFeatures,false);
 });
+
+
+test("modo prudente rechaza preguntas nuevas sin modificar los pesos",()=>{
+  const clf=new NeuralClassifier(model);
+  const unknown=[
+    "Qué es el ADN","Qué tiempo hace hoy","Quién es el presidente de España",
+    "Cómo hacer una tortilla","Cuánto cuesta un coche",
+    "Qué es una fruta","Qué es la hipotenusa","Cuál es la capital de Francia",
+    "Dime un chiste","Qué es la química","Qué es una célula",
+    "Cuál es mi pedido"
+  ];
+  for(const question of unknown){
+    const prediction=clf.predict(question);
+    const safe=clf.answerSafely(question);
+    assert.equal(safe.answer,prediction.answer,"Predicción original alterada: "+question);
+    assert.equal(safe.accepted,false,"Se esperaba rechazar: "+question);
+    assert.match(safe.safeAnswer,/Todavía no sé/);
+  }
+  for(const [question,answer] of [
+    ["buenos dias","Hola."],["define python","Python es un lenguaje."],
+    ["como funciona un transformer","Un transformer usa atencion."]
+  ]){
+    const safe=clf.answerSafely(question);
+    assert.equal(safe.accepted,true,question);
+    assert.equal(safe.safeAnswer,answer,question);
+  }
+});
