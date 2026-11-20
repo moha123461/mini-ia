@@ -3,27 +3,59 @@ import {BrowserTransformer} from "./transformer.js";
 const $=id=>document.getElementById(id);
 let transformer=null;
 let abort=null;
+let loadVersion=0;
+const BUNDLED_MODEL="./models/mi-transformer-web.json";
 function status(text,error=false){
   $("transformer-status").textContent=text;
   $("transformer-status").style.color=error?"#ffaaa9":"#b8eedf";
 }
+function useModel(model,description){
+  const candidate=new BrowserTransformer(model);
+  transformer=candidate;
+  $("transformer-generate").disabled=false;
+  $("transformer-source").textContent=description+" · "+candidate.name+" · "+candidate.origin;
+  // Los modelos entrenados con texto libre pueden no conocer «Usuario:».
+  for(const btn of document.querySelectorAll("[data-try-transformer]")){
+    try{candidate.encode(btn.dataset.tryTransformer);btn.disabled=false;btn.title="";}
+    catch{btn.disabled=true;btn.title="Este ejemplo no existe en el vocabulario del modelo activo.";}
+  }
+  status("Modelo neuronal cargado: puedes generar texto con sus pesos reales.");
+}
 $("transformer-file").addEventListener("change",async event=>{
   const file=event.target.files?.[0];
   if(!file)return;
-  transformer=null;$("transformer-generate").disabled=true;
+  const version=++loadVersion;
+  if(abort){abort.abort();}
+  $("transformer-generate").disabled=true;
   try{
     if(file.size>1_500_000)throw Error("El archivo es demasiado grande.");
-    status("Leyendo los pesos del modelo...");
-    const parsed=JSON.parse(await file.text());
-    transformer=new BrowserTransformer(parsed);
-    $("transformer-generate").disabled=false;
-    $("transformer-source").textContent="Modelo: "+transformer.name+" · "+transformer.origin;
-    status("Transformer cargado. Ya puedes generar texto.");
+    status("Leyendo el modelo elegido...");
+    const data=JSON.parse(await file.text());
+    if(version!==loadVersion)return;
+    useModel(data,"Modelo importado por ti");
   }catch(err){
-    status("No se pudo abrir el modelo: "+err.message,true);
-    $("transformer-source").textContent="";
+    if(version!==loadVersion)return;
+    status("No se pudo abrir el archivo: "+err.message,true);
+    $("transformer-generate").disabled=!transformer;
   }
 });
+async function loadBundled(){
+  const version=++loadVersion;
+  status("Cargando automáticamente tu Transformer entrenado en Kaggle...");
+  try{
+    const response=await fetch(BUNDLED_MODEL,{cache:"no-cache"});
+    if(!response.ok)throw Error("HTTP "+response.status);
+    const json=await response.text();
+    if(json.length>1_500_000)throw Error("Modelo demasiado grande");
+    const parsed=JSON.parse(json);
+    if(version!==loadVersion)return;
+    useModel(parsed,"Modelo integrado en Mini IA");
+  }catch(err){
+    if(version!==loadVersion)return;
+    status("No se pudo cargar automáticamente: "+err.message+". Puedes importar el JSON manualmente.",true);
+  }
+}
+loadBundled();
 $("transformer-form").addEventListener("submit",async event=>{
   event.preventDefault();
   if(!transformer)return status("Primero importa un modelo JSON.",true);
