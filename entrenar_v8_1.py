@@ -81,7 +81,8 @@ valid_rows = [sample(qs[2], a) for a, qs in topics]
 test_rows = [sample(qs[3], a) for a, qs in topics]
 # El vocabulario incluye caracteres de todos los conjuntos, pero solamente
 # train_rows se utiliza para actualizar los pesos.
-chars = sorted(set("".join(train_rows + valid_rows + test_rows)) | {PAD})
+# Vocabulario definido antes de ver validación o prueba: letras y signos comunes.
+chars = sorted(set("".join(train_rows)) | set("abcdefghijklmnopqrstuvwxyz0123456789") | {" ", ":", ".", "\n", PAD})
 assert PAD not in "".join(train_rows + valid_rows + test_rows)
 to_id = {c: i for i, c in enumerate(chars)}
 to_char = {i: c for c, i in to_id.items()}
