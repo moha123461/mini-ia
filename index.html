@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101423">
-  <meta name="description" content="Mini IA 7.1: chatbot educativo con base de conocimientos, explicaciones y aprendizaje local, sin API ni servidor.">
-  <title>Mini IA 7.1 — Mi primera IA</title>
+  <meta name="description" content="Mini IA 9.0: chatbot educativo con base de conocimientos, explicaciones y aprendizaje local, sin API ni servidor.">
+  <title>Mini IA 9.0 — Mi primera IA</title>
   <style>
     :root{color-scheme:dark;--bg:#0b0e19;--panel:#141a2b;--panel2:#1d263c;--stroke:#303c56;--text:#f0f4fc;--muted:#a6b2c9;--accent:#9b9dff;--accent2:#6ee0bd;--user:#4b4bba}
     *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#1b2646 0,#0b0e19 57%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
@@ -57,11 +57,11 @@
 <body>
 <main class="app">
   <header class="top">
-    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 7.1</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
+    <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><h1>Mini IA 9.0</h1><p>Mi primera IA · Proyecto educativo</p></div></div>
     <div class="status">● Funciona sin API</div>
   </header>
   <section class="chat" aria-label="Chat con Mini IA">
-    <div class="chatbar"><div><strong>Conversación</strong><p id="knowledge-count" class="counter" aria-live="polite">Cargando conocimientos...</p></div><div class="actions"><button class="softbutton" type="button" id="export-chat">Exportar chat</button><button class="softbutton" type="button" id="clear">Borrar chat</button></div></div>
+    <div class="chatbar"><div><strong>Chat principal · Respuestas preparadas</strong><p id="knowledge-count" class="counter" aria-live="polite">Cargando conocimientos...</p></div><div class="actions"><button class="softbutton" type="button" id="export-chat">Exportar chat</button><button class="softbutton" type="button" id="clear">Borrar chat</button></div></div>
     <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
     <div class="suggestions" id="suggestions" aria-label="Preguntas sugeridas"></div>
     <form class="composer" id="chat-form"><label for="message" class="composer-label">Pregunta</label><input id="message" type="text" maxlength="350" placeholder="Escribe una pregunta..." autocomplete="off" required><button type="submit">Enviar</button></form>
@@ -86,12 +86,12 @@
   <details id="classifier-lab">
     <summary>🧠 Mini IA 9.0 — Probar mi red neuronal clasificadora</summary>
     <p>Tu experimento de Kaggle obtuvo <strong>27/30 respuestas acertadas</strong> en la prueba final, frente a 28/30 de la búsqueda por similitud. Aquí puedes probar ambos con tus propias preguntas. <strong>Este modelo elige una de 30 respuestas:</strong> no genera frases nuevas ni sustituye el chat principal.</p>
-    <p>Descarga <code>mi-ia-v9-clasificador.json</code> desde <strong>Output → /kaggle/working</strong> de tu notebook de Kaggle. Después, selecciónalo aquí. Los cálculos se realizan en tu navegador.</p>
+    <p>Ya he integrado los <strong>pesos reales de tu entrenamiento</strong> en GitHub. El modelo se carga automáticamente al abrir la página y realiza los cálculos en tu navegador, sin API de IA. También puedes importar otro modelo entrenado si quieres compararlos.</p>
     <div class="classifier-tools">
-      <label for="classifier-file">Cargar modelo Mini IA 9.0 (.json)</label>
+      <label for="classifier-file">Opcional: importar otro clasificador (.json)</label>
       <input id="classifier-file" type="file" accept=".json,application/json" aria-describedby="classifier-status">
       <p id="classifier-model" class="note"></p>
-      <p id="classifier-status" class="note" role="status">Todavía no has cargado tu clasificador de Kaggle.</p>
+      <p id="classifier-status" class="note" role="status">Cargando automáticamente tu clasificador de Kaggle...</p>
       <form id="classifier-form" class="teach">
         <label for="classifier-question">Escribe una pregunta</label>
         <input id="classifier-question" type="text" maxlength="350" required placeholder="Por ejemplo: ¿Qué es Python?">
@@ -102,14 +102,14 @@
         </div>
         <button class="add" id="classifier-submit" type="submit" disabled>Preguntar a mi red neuronal</button>
       </form>
-      <div id="classifier-result" class="classifier-result" aria-live="polite">Primero carga el archivo de Kaggle.</div>
+      <div id="classifier-result" class="classifier-result" aria-live="polite">El modelo se cargará automáticamente; después escribe una pregunta.</div>
     </div>
   </details>
   <details id="transformer-lab">
     <summary>🧠 Laboratorio: mi Transformer neuronal (experimental)</summary>
     <p>Esta sección ejecuta <strong>una red neuronal Transformer real</strong> con sus propios pesos. El modelo predice el siguiente carácter; <strong>no funciona como un asistente conversacional avanzado</strong>. El chat de arriba seguirá funcionando de forma independiente.</p>
     <p>Tu <strong>Transformer entrenado en Kaggle se carga automáticamente</strong> desde GitHub. Los cálculos se realizan en tu navegador, sin API de IA ni servidor de inferencia. Si vuelves a entrenar otro modelo, puedes importarlo manualmente desde aquí.</p>
-    <p><strong>Nuevo experimento Mini IA 9.0:</strong> el Transformer v8.1 obtuvo 0/30 respuestas exactas, mientras que la búsqueda por similitud consiguió 28/30. Hemos preparado el <a href="https://github.com/moha123461/mini-ia/blob/main/Mini_IA_9_Clasificador.ipynb" target="_blank" rel="noopener noreferrer">cuaderno Mini IA 9.0</a> para entrenar una red neuronal que elige entre 30 respuestas completas, en lugar de generarlas letra a letra. <strong>Este clasificador todavía debe entrenarse en Kaggle y no está conectado al chat de la web.</strong></p>
+    <p><strong>Nuevo experimento Mini IA 9.0:</strong> el Transformer v8.1 obtuvo 0/30 respuestas exactas, mientras que la búsqueda por similitud consiguió 28/30. Hemos preparado el <a href="https://github.com/moha123461/mini-ia/blob/main/Mini_IA_9_Clasificador.ipynb" target="_blank" rel="noopener noreferrer">cuaderno Mini IA 9.0</a> para entrenar una red neuronal que elige entre 30 respuestas completas, en lugar de generarlas letra a letra. <strong>El clasificador ya está entrenado e integrado en la sección «Mini IA 9.0». Sigue separado del chat principal para poder comparar los sistemas.</strong></p>
     <div class="transformer-tools">
       <label for="transformer-file">Opcional: importar otro modelo (.json)</label>
       <input id="transformer-file" type="file" accept=".json,application/json" aria-describedby="transformer-status">
@@ -143,10 +143,10 @@
       <pre id="transformer-output" class="transformer-output" aria-live="polite">Aquí aparecerá el texto generado por el modelo.</pre>
     </div>
   </details>
-  <p class="footer">Mini IA 7.1 · Proyecto educativo gratuito. El chat principal busca respuestas preparadas. En el laboratorio se ejecuta tu Transformer de Kaggle con pesos publicados en GitHub. Las preguntas se procesan en tu navegador y el historial se almacena localmente. El modelo neuronal genera caracteres, no respuestas fiables a preguntas libres.</p>
+  <p class="footer">Mini IA 9.0 · Proyecto educativo gratuito. El chat principal recupera respuestas preparadas; el laboratorio 9.0 ejecuta tu red neuronal clasificadora y el laboratorio Transformer genera caracteres. Son sistemas separados. Los cálculos se hacen en tu navegador y el historial del chat se guarda localmente. La red clasificadora solo conoce 30 categorías.</p>
 </main>
 <script type="module" src="./app.js"></script>
 <script type="module" src="./transformer-ui.js?v=7.1"></script>
-<script type="module" src="./classifier-ui.js?v=9.0"></script>
+<script type="module" src="./classifier-ui.js?v=9.1"></script>
 </body>
 </html>
